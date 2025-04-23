@@ -8,7 +8,7 @@ class InvoiceApplicationTests {
 
 	@Test
 	void contextLoads() {
-		System.out.println("individual");
+		System.out.println("individual test");
 	}
 
 }
