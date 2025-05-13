@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--一定要写对-->
+<mapper namespace="com.work.work.mapper.GoodMapper">
+
+    <select id="getRandomGoods" resultType="com.work.work.entity.Goods">
+        SELECT * FROM Goods ORDER BY RAND() LIMIT 4;
+    </select>
+    <select id="getGoodById" resultType="com.work.work.entity.Goods">
+        SELECT * FROM Goods WHERE id = #{goodid}
+    </select>
+</mapper>

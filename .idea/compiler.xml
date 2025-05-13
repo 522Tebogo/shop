@@ -2,11 +2,13 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile name="Annotation profile for Invoice" enabled="true">
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Annotation profile for invoice" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
+          <entry name="$PROJECT_DIR$/../../../Maven/apache-maven-3.9.9/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
           <entry name="$PROJECT_DIR$/../../../Maven/apache-maven-3.9.9/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
         </processorPath>
         <module name="Invoice" />

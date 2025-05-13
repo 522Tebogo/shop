@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--一定要写对-->
+<mapper namespace="com.work.work.mapper.ItemMapper">
+
+
+    <insert id="addGoodItem">
+        insert into wn_caritem (userid,goodid,num) values (#{userid},#{goodid},#{num})
+    </insert>
+
+    <select id="getGoodsByUserId" resultType="com.work.work.entity.Goods">
+        SELECT goods.id,goods.name,goods.NormalPrice,goods.SurprisePrice,goods.imageUrl,goods.description,wn_caritem.num
+            FROM wn_caritem INNER JOIN wn_user on wn_caritem.userid = wn_user.id
+                                 INNER JOIN goods on wn_caritem.goodid = goods.id
+        WHERE wn_caritem.userid = #{userid}
+    </select>
+
+    <select id="isSingle">
+
+    SELECT * FROM wn_caritem where userid = #{userid} and goodid=#{goodid}
+    </select>
+
+    <select id="addNum">
+        UPDATE wn_caritem SET num = num + #{num}
+        WHERE userid = #{userid} and goodid = #{goodid}
+    </select>
+
+</mapper>

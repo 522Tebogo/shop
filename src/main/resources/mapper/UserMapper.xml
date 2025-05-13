@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--一定要写对-->
+<mapper namespace="com.work.work.mapper.UserMapper">
+    <!--根据用户账号名称获取用户-->
+    <select id="getUserByAccount"
+            resultType="com.work.work.entity.User">
+        select * from wn_user where account = #{account}
+    </select>
+
+    <!--注册-->
+    <insert id="insert" parameterType="com.work.work.entity.User">
+        INSERT INTO wn_user (account, password, telphone,
+                             email,money,points,avatar,reg_time,status)
+        VALUES (#{account}, #{password}, #{telphone}, #{email},#{money},#{points},#{avatar},#{regTime},'Y')
+    </insert>
+    <!--注册-->
+</mapper>
