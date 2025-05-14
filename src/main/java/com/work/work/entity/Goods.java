@@ -10,6 +10,8 @@ public class Goods {
     private int SurprisePrice;
     private String imageUrl;
     private String description;
+    private String category;
     private int num;
+
 }
 

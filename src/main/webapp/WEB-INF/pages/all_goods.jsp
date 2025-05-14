@@ -2,11 +2,10 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <!DOCTYPE html>
-
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>${good.name} - 嗨购商城</title>
+    <title>商品展示 - 嗨购商城</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
@@ -20,27 +19,33 @@
         .navbar {
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        .hero-section {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #6e8efb;
+        }
         .footer {
             background: #343a40;
             color: white;
             padding: 40px 0;
             margin-top: 50px;
-        }
-        .default-logo {
-            background-color: #5d6bdf;
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            padding: 10px;
-            border-radius: 4px;
-            display: inline-block;
-        }
-        .user-avatar {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #e9ecef;
         }
         .footer a {
             color: #adb5bd;
@@ -50,41 +55,66 @@
             color: white;
             text-decoration: underline;
         }
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        .section-title:after {
+            content: '';
+            width: 70px;
+            height: 3px;
+            background: #6e8efb;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e9ecef;
+        }
+
+        .welcome-message {
+            margin-bottom: 0;
+            margin-right: 20px;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1050;
+        }
+
+        .default-logo {
+            background-color: #5d6bdf;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
         .product-image {
-            width: 100%;
-            height: 500px;
+            height: 220px;
             background-color: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #666;
             font-weight: bold;
-            object-fit: contain;
-        }
-        .product-details {
-            padding: 50px 0;
-        }
-        .product-title {
-            font-size: 2rem;
-            font-weight: bold;
-        }
-        .product-price {
-            font-size: 1.5rem;
-            color: #dc3545;
-            font-weight: bold;
-        }
-        .product-description {
-            font-size: 1.1rem;
-            margin-top: 20px;
-        }
-        .add-to-cart-btn {
-            margin-top: 30px;
         }
     </style>
 </head>
 <body>
 
-<!-- 导航条 -->
+<!-- 导航栏 -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
     <div class="container">
         <a class="navbar-brand" href="/">
@@ -108,13 +138,12 @@
                     <a class="nav-link" href="#"><i class="bi bi-gift"></i> 限时特惠</a>
                 </li>
             </ul>
-
             <div class="d-flex align-items-center">
                 <% if (session.getAttribute("user") != null) { %>
-                <p class="welcome-message" style="margin-right: 20px;margin-bottom: 2px"><i class="bi bi-person-check"></i> 欢迎，${user.account}</p>
+                <p class="welcome-message"><i class="bi bi-person-check"></i> 欢迎，${user.account}</p>
                 <c:choose>
                     <c:when test="${not empty user.avatar}">
-                        <img src="${user.avatar}" width="40px" height="40px" alt="用户头像" class="user-avatar me-2">
+                        <img src="${user.avatar}" alt="用户头像" class="user-avatar me-2">
                     </c:when>
                     <c:otherwise>
                         <div style="width: 35px; height: 35px; background-color: #e9ecef; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
@@ -144,56 +173,50 @@
     </div>
 </nav>
 
-<section class="product-details py-5">
-    <div class="container">
-        <div class="row g-5 align-items-start">
-
-            <!-- 左侧图片区域 -->
-            <div class="col-md-6">
-                <div class="bg-white rounded-4 shadow-sm p-4 d-flex align-items-center justify-content-center" style="width: 100%; height: 500px;">
-                    <img src="${good.imageUrl}" alt="${good.name}" width="500px" height="500px" class="img-fluid rounded-3" style="max-height: 100%; max-width: 100%; object-fit: contain;">
-                </div>
-            </div>
-
-            <!-- 右侧商品信息区域 -->
-            <div class="col-md-6 d-flex flex-column justify-content-between" style="height: 500px;">
-                <div>
-                    <h2 class="fw-bold text-dark mb-3">${good.name}</h2>
-
-                    <div class="mb-3">
-                        <span class="text-secondary text-decoration-line-through">原价：¥${good.normalPrice}</span><br>
-                        <span class="fs-3 fw-bold text-danger mt-2 d-inline-block">惊喜价：¥${good.surprisePrice}</span>
-                    </div>
-
-                    <div class="mb-4">
-                        <h6 class="text-muted">商品描述</h6>
-                        <p class="text-dark">${good.description}</p>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="quantity" class="form-label fw-semibold">选择数量</label>
-                        <input type="number" id="quantity" name="visibleQuantity" min="1" value="1" class="form-control form-control-lg w-25">
-                    </div>
-                </div>
-
-                <!-- 表单提交加购物车 -->
-                <form action="/car/add" method="post" class="d-flex flex-column flex-md-row gap-3">
-                    <input type="hidden" name="goodId" value="${good.id}">
-                    <input type="hidden" id="hiddenQuantity" name="quantity" value="1">
-
-                    <button type="submit" class="btn btn-primary btn-lg w-100">
-                        <i class="bi bi-cart-plus"></i> 加入购物车
-                    </button>
-
-                    <a href="/order/buyNow/${good.id}" class="btn btn-outline-danger btn-lg w-100">
-                        <i class="bi bi-lightning"></i> 立即购买
-                    </a>
-                </form>
-            </div>
-        </div>
+<!-- 分类导航区域 -->
+<div class="container mt-4">
+    <div class="d-flex justify-content-center flex-wrap gap-2">
+        <a href="/good/all" class="btn btn-outline-primary ${param.category == '全部' || param.category == null ? 'active' : ''}">全部</a>
+        <a href="/good/all?category=数码" class="btn btn-outline-primary ${param.category == '数码' ? 'active' : ''}">数码</a>
+        <a href="/good/all?category=电器" class="btn btn-outline-primary ${param.category == '电器' ? 'active' : ''}">电器</a>
+        <a href="/good/all?category=服饰" class="btn btn-outline-primary ${param.category == '服饰' ? 'active' : ''}">服饰</a>
+        <a href="/good/all?category=食品" class="btn btn-outline-primary ${param.category == '食品' ? 'active' : ''}">食品</a>
     </div>
-</section>
+</div>
 
+<!-- 商品展示区域 -->
+<div class="container py-5">
+    <h2 class="section-title">
+        <c:choose>
+            <c:when test="${not empty param.category && param.category != '全部'}">${param.category}</c:when>
+            <c:otherwise>全部商品</c:otherwise>
+        </c:choose>
+    </h2>
+
+    <div class="row">
+        <c:forEach var="item" items="${goods}">
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        <div class="product-image">
+                            <img src="${item.imageUrl}" alt="${item.name}" class="img-fluid">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">${item.name}</h5>
+                            <p class="text-danger fw-bold">惊喜价 ¥${item.surprisePrice}</p>
+                            <p class="text-muted text-decoration-line-through">原价 ¥${item.normalPrice}</p>
+                            <p class="text-muted small">${item.description}</p>
+                            <p class="text-secondary small">分类：${item.category}</p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="/good/single/${item.id}" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-basket"></i> 查看详情
+                            </a>
+                        </div>
+                    </div>
+                </div>
+        </c:forEach>
+    </div>
+</div>
 
 <!-- 页脚 -->
 <footer class="footer">
@@ -235,23 +258,10 @@
                 </p>
             </div>
         </div>
-        <hr class="my-4 bg-secondary">
-        <div class="text-center">
-            <p>© 2024 嗨购商城. 保留所有权利.</p>
-        </div>
     </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    const quantityInput = document.getElementById('quantity');
-    const hiddenQuantity = document.getElementById('hiddenQuantity');
-
-    quantityInput.addEventListener('input', () => {
-        const value = parseInt(quantityInput.value) || 1;
-        hiddenQuantity.value = value;
-    });
-</script>
 
 </body>
 </html>

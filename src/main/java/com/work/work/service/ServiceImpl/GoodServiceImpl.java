@@ -22,4 +22,14 @@ public class GoodServiceImpl implements GoodService {
         return goodMapper.getGoodById(goodid);
     }
 
+    @Override
+    public List<Goods> getAllGoods() {
+        return goodMapper.getAllGoods();
+    }
+    @Override
+    public List<Goods> getGoodsByCategory(String category) {
+        return goodMapper.getGoodsByCategory(category);
+    }
+
+
 }

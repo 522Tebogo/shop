@@ -9,4 +9,7 @@ import java.util.List;
 public interface GoodService {
     List<Goods> getRandomGoods();
     Goods getGoodById(int goodid);
+    List<Goods> getAllGoods();
+    public List<Goods> getGoodsByCategory(String category);
+
 }

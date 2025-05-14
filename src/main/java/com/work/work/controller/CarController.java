@@ -30,40 +30,40 @@ public class CarController {
 
     @PostMapping("/add")
     public String add(@RequestParam("goodId") int goodid, @RequestParam("quantity") int num, HttpSession session,Model model) {
-        User user = (User) session.getAttribute("user");
-        int userid = user.getId();
-        boolean isEmpty = this.isSingle(userid,goodid);
-        if(isEmpty==true) {
-            int res = itemService.addGoodItem(userid, goodid, num);
-            if (res == 1) {
-                System.out.println("添加成功");
-                List<Goods> goods = itemService.getGoodsByUserId(user.getId());
+            User user = (User) session.getAttribute("user");
+            int userid = user.getId();
+            boolean isEmpty = this.isSingle(userid,goodid);
+            if(isEmpty==true) {
+                int res = itemService.addGoodItem(userid, goodid, num);
+                if (res == 1) {
+                    System.out.println("添加成功");
+                    List<Goods> goods = itemService.getGoodsByUserId(user.getId());
 
-                model.addAttribute("goods", goods);
+                    model.addAttribute("goods", goods);
 
-                return "car";
-            } else {
-                System.out.println("添加失败");
-                return "";
+                    return "car";
+                } else {
+                    System.out.println("添加失败");
+                    return "";
+                }
             }
-        }
-        else{
-            itemService.addNum(userid,goodid,num);
-            List<Goods> goods = itemService.getGoodsByUserId(user.getId());
-            model.addAttribute("goods", goods);
-            return "car";
+            else{
+                    itemService.addNum(userid,goodid,num);
+                List<Goods> goods = itemService.getGoodsByUserId(user.getId());
+                model.addAttribute("goods", goods);
+                return "car";
+            }
+
         }
 
-    }
-
-    public boolean isSingle(int userid,int goodid) {
-        List<Goods> goods = itemService.isSingle(userid,goodid);
-        if (goods.size()>0) {
-            return false;
+        public boolean isSingle(int userid,int goodid) {
+                List<Goods> goods = itemService.isSingle(userid,goodid);
+                if (goods.size()>0) {
+                    return false;
+                }
+                else
+                    return true;
         }
-        else
-            return true;
-    }
     @PostMapping("/updateQuantity")
     @ResponseBody
     public Map<String, Object> updateQuantity(@RequestBody Map<String, Integer> requestData, HttpSession session) {

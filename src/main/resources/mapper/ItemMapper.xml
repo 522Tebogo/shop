@@ -26,5 +26,9 @@
         UPDATE wn_caritem SET num = num + #{num}
         WHERE userid = #{userid} and goodid = #{goodid}
     </select>
-
+    <update id="updateQuantity">
+        UPDATE wn_caritem
+        SET num = #{quantity}
+        WHERE userid = #{userId} AND goodid = #{goodId}
+    </update>
 </mapper>

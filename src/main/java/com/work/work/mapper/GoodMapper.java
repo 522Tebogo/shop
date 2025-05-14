@@ -9,4 +9,7 @@ import java.util.List;
 public interface GoodMapper {
     List<Goods> getRandomGoods();
     Goods getGoodById(int goodid);
+    List<Goods> getAllGoods();
+    List<Goods> getGoodsByCategory(String category);
+
 }

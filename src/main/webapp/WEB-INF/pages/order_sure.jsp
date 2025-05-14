@@ -1,10 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>我的购物车 - 嗨购商城</title>
+    <title>订单确认 - 嗨购商城</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
@@ -18,11 +20,27 @@
         .navbar {
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e9ecef;
+        }
         .section-title {
             text-align: center;
             margin-bottom: 30px;
             position: relative;
             padding-bottom: 15px;
+        }
+        .default-logo {
+            background-color: #5d6bdf;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            border-radius: 4px;
+            display: inline-block;
         }
         .section-title:after {
             content: '';
@@ -34,7 +52,7 @@
             left: 50%;
             transform: translateX(-50%);
         }
-        .cart-item {
+        .order-item {
             background: white;
             border-radius: 8px;
             margin-bottom: 20px;
@@ -43,48 +61,35 @@
             display: flex;
             align-items: center;
         }
-        .cart-item img {
+        .order-item img {
             width: 100px;
             height: 100px;
             object-fit: cover;
             margin-right: 15px;
             border-radius: 4px;
         }
-        .cart-item-details {
+        .welcome-message {
+
+            margin-bottom: 0;
+            margin-right: 20px;
+
+        }
+        .order-item-details {
             flex-grow: 1;
         }
-        .cart-item-actions {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .cart-item-actions button {
-            margin-top: 5px;
-        }
-        .cart-total {
+        .order-total {
             background: white;
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             margin-bottom: 20px;
         }
-        .default-logo {
-            background-color: #5d6bdf;
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            padding: 10px;
-            border-radius: 4px;
-            display: inline-block;
-        }
     </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
     <div class="container">
-        <a class="navbar-brand" href="/">
-            <div class="default-logo">嗨购商城</div>
-        </a>
+        <a class="navbar-brand" href="/"><div class="default-logo">嗨购商城</div></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -140,106 +145,80 @@
 </nav>
 
 <div class="container mt-5">
-    <h2 class="section-title">我的购物车</h2>
+    <h2 class="section-title">订单确认</h2>
 
-    <c:if test="${empty goods}">
-        <div class="alert alert-info" role="alert">
-            您的购物车空空如也，快去<a href="/" class="alert-link">首页</a>看看吧！
+    <div class="order-total">
+        <h4>订单信息</h4>
+        <hr>
+        <div class="d-flex justify-content-between">
+            <p>订单编号:</p>
+            <p class="fw-bold" id="order-id">${orderId}</p>
         </div>
-    </c:if>
-
-    <c:if test="${not empty goods}">
+        <div class="d-flex justify-content-between">
+            <p>下单时间:</p>
+            <p class="fw-bold" id="current-time">${currentTime}</p>
+        </div>
+        <hr>
+        <h5>订单详情</h5>
+        <c:set var="totalPrice" value="0" />
         <c:forEach var="item" items="${goods}">
-            <div class="cart-item">
+            <c:set var="itemTotal" value="${item.normalPrice * item.num}" />
+            <c:set var="totalPrice" value="${totalPrice + itemTotal}" />
+        </c:forEach>
+        <c:set var="shippingFee" value="${totalPrice * 0.05}" />
+        <c:set var="finalTotal" value="${totalPrice + shippingFee}" />
+        <c:forEach var="item" items="${goods}">
+
+
+            <div class="order-item">
                 <img src="${item.imageUrl}" alt="${item.name}">
-                <div class="cart-item-details">
+                <div class="order-item-details">
                     <h5>${item.name}</h5>
                     <p class="text-muted">规格: ${item.description}</p>
-                    <p class="text-danger fw-bold">¥${item.normalPrice}</p>
-                    <c:set var="itemid" value="${item.id}"/>
-
-                    <div class="d-flex align-items-center">
-
-                        <label for="quantity-${item.id}" class="me-2">数量:</label>
-                        <input type="number" class="form-control form-control-sm" id="quantity-${item.id}" value="${item.num}" min="1" style="width: 70px;">
-                            </div>
-
-                </div>
-                <div class="cart-item-actions">
-                    <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> 移除</button>
+                    <p class="text-danger fw-bold">¥<fmt:formatNumber value="${item.normalPrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
+                    <p class="text-muted">数量: ${item.num}</p>
+                    <p class="text-muted">小计: ¥<fmt:formatNumber value="${item.normalPrice * item.num}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
                 </div>
             </div>
         </c:forEach>
-
-        <div class="cart-total">
-            <h4>订单总计</h4>
-            <hr>
-            <div class="d-flex justify-content-between">
-                <p>商品总价:</p>
-                <p class="fw-bold">¥${totalPrice}</p>
-            </div>
-            <div class="d-flex justify-content-between">
-                <p>运费:</p>
-                <p class="fw-bold">¥${shippingFee}</p>
-            </div>
-            <hr>
-            <div class="d-flex justify-content-between">
-                <h5>应付总额:</h5>
-                <h5 class="text-danger fw-bold">¥${finalTotal}</h5>
-            </div>
-            <div class="text-end mt-3">
-                <button class="btn btn-primary"><i class="bi bi-credit-card"></i> 去结算</button>
-            </div>
+        <hr>
+        <div class="d-flex justify-content-between">
+            <p>购物车商品价格总和:</p>
+            <p class="fw-bold" id="total-price">¥<fmt:formatNumber value="${totalPrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
         </div>
-    </c:if>
+        <div class="d-flex justify-content-between">
+            <p>运费 (5%):</p>
+            <p class="fw-bold" id="shipping-fee">¥<fmt:formatNumber value="${shippingFee}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between">
+            <h5>应付总额:</h5>
+            <h5 class="text-danger fw-bold">¥<span id="final-total"><fmt:formatNumber value="${finalTotal}" type="number" maxFractionDigits="2" minFractionDigits="2"/></span></h5>
+        </div>
+        <div class="text-end mt-3">
+            <button class="btn btn-primary"><i class="bi bi-credit-card"></i> 确认订单</button>
+        </div>
+    </div>
 </div>
 
 <footer class="footer mt-5">
     <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <h5>关于我们</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#">公司简介</a></li>
-                    <li><a href="#">企业文化</a></li>
-                    <li><a href="#">发展历程</a></li>
-                    <li><a href="#">联系我们</a></li>
-                </ul>
-            </div>
-            <div class="col-md-3">
-                <h5>帮助中心</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#">购物指南</a></li>
-                    <li><a href="#">支付方式</a></li>
-                    <li><a href="#">配送方式</a></li>
-                    <li><a href="#">售后服务</a></li>
-                </ul>
-            </div>
-            <div class="col-md-3">
-                <h5>商家服务</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#">商家入驻</a></li>
-                    <li><a href="#">商家中心</a></li>
-                    <li><a href="#">营销服务</a></li>
-                    <li><a href="#">物流服务</a></li>
-                </ul>
-            </div>
-            <div class="col-md-3">
-                <h5>关注我们</h5>
-                <p>
-                    <i class="bi bi-wechat me-2"></i> 官方微信<br>
-                    <i class="bi bi-phone me-2"></i> 客服热线: 400-123-4567<br>
-                    <i class="bi bi-envelope me-2"></i> 客服邮箱: service@example.com
-                </p>
-            </div>
-        </div>
-        <hr class="my-4 bg-secondary">
-        <div class="text-center">
-            <p>© 2024 嗨购商城. 保留所有权利.</p>
-        </div>
+        <!-- Footer content here -->
     </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // 模拟生成订单编号和当前时间
+    const currentDate = new Date();
+    const orderId = currentDate.getFullYear() + ('0' + (currentDate.getMonth() + 1)).slice(-2) + ('0' + currentDate.getDate()).slice(-2) +
+        ('0' + currentDate.getHours()).slice(-2) + ('0' + currentDate.getMinutes()).slice(-2) +
+        ('0' + currentDate.getSeconds()).slice(-2);
+    document.getElementById('order-id').textContent = orderId;
+
+    const currentTime = currentDate.toLocaleString();
+    document.getElementById('current-time').textContent = currentTime;
+</script>
+
 </body>
 </html>
