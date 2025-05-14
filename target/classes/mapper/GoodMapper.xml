@@ -11,4 +11,13 @@
     <select id="getGoodById" resultType="com.work.work.entity.Goods">
         SELECT * FROM Goods WHERE id = #{goodid}
     </select>
+
+    <select id="getAllGoods" resultType="com.work.work.entity.Goods">
+        SELECT * FROM  goods
+    </select>
+    <select id="getGoodsByCategory" resultType="com.work.work.entity.Goods">
+        SELECT * FROM Goods WHERE category = #{category}
+    </select>
+
+
 </mapper>
