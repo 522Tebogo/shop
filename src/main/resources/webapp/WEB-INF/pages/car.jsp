@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,6 +20,13 @@
         .navbar {
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e9ecef;
+        }
         .section-title {
             text-align: center;
             margin-bottom: 30px;
@@ -33,6 +42,12 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
+        }
+        .welcome-message {
+
+            margin-bottom: 0;
+            margin-right: 20px;
+
         }
         .cart-item {
             background: white;
@@ -149,21 +164,29 @@
     </c:if>
 
     <c:if test="${not empty goods}">
+
+        <%-- 计算总价、运费、应付总额 --%>
+        <c:set var="totalPrice" value="0" />
+        <c:forEach var="item" items="${goods}">
+            <c:set var="itemTotal" value="${item.normalPrice * item.num}" />
+            <c:set var="totalPrice" value="${totalPrice + itemTotal}" />
+        </c:forEach>
+        <c:set var="shippingFee" value="${totalPrice * 0.05}" />
+        <c:set var="finalTotal" value="${totalPrice + shippingFee}" />
+
+        <%-- 商品列表显示 --%>
         <c:forEach var="item" items="${goods}">
             <div class="cart-item">
                 <img src="${item.imageUrl}" alt="${item.name}">
                 <div class="cart-item-details">
                     <h5>${item.name}</h5>
                     <p class="text-muted">规格: ${item.description}</p>
-                    <p class="text-danger fw-bold">¥${item.normalPrice}</p>
-                    <c:set var="itemid" value="${item.id}"/>
+                    <p class="text-danger fw-bold">¥<fmt:formatNumber value="${item.normalPrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
 
                     <div class="d-flex align-items-center">
-
                         <label for="quantity-${item.id}" class="me-2">数量:</label>
-                        <input type="number" class="form-control form-control-sm" id="quantity-${item.id}" value="${item.num}" min="1" style="width: 70px;">
-                            </div>
-
+                        <input type="number" class="form-control form-control-sm quantity-input" id="quantity-${item.id}" value="${item.num}" min="1" style="width: 70px;" data-good-id="${item.id}">
+                    </div>
                 </div>
                 <div class="cart-item-actions">
                     <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> 移除</button>
@@ -171,27 +194,30 @@
             </div>
         </c:forEach>
 
+        <%-- 总价区块 --%>
         <div class="cart-total">
             <h4>订单总计</h4>
             <hr>
             <div class="d-flex justify-content-between">
-                <p>商品总价:</p>
-                <p class="fw-bold">¥${totalPrice}</p>
+                <p>购物车商品价格总和:</p>
+                <p class="fw-bold" id="total-price">¥<fmt:formatNumber value="${totalPrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
             </div>
             <div class="d-flex justify-content-between">
-                <p>运费:</p>
-                <p class="fw-bold">¥${shippingFee}</p>
+                <p>运费 (5%):</p>
+                <p class="fw-bold" id="shipping-fee">¥<fmt:formatNumber value="${shippingFee}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
             </div>
             <hr>
             <div class="d-flex justify-content-between">
                 <h5>应付总额:</h5>
-                <h5 class="text-danger fw-bold">¥${finalTotal}</h5>
+                <h5 class="text-danger fw-bold">¥<span id="final-total"><fmt:formatNumber value="${finalTotal}" type="number" maxFractionDigits="2" minFractionDigits="2"/></span></h5>
             </div>
             <div class="text-end mt-3">
                 <button class="btn btn-primary"><i class="bi bi-credit-card"></i> 去结算</button>
             </div>
         </div>
     </c:if>
+
+
 </div>
 
 <footer class="footer mt-5">
@@ -241,5 +267,53 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // 监听商品数量的变化
+    document.querySelectorAll('.quantity-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const goodId = this.getAttribute('data-good-id');
+            const quantity = this.value;
+
+            // 发送 AJAX 请求更新数据库中的商品数量
+            fetch('/car/updateQuantity', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ goodId: goodId, quantity: quantity })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 更新页面上的总价等信息
+                        updateCartData(data.updatedGoods);
+                    } else {
+                        alert('更新失败！');
+                    }
+                })
+                .catch(error => {
+                    console.error('请求失败:', error);
+                });
+        });
+    });
+
+    // 更新购物车总价等数据
+    function updateCartData(goods) {
+        // 重新计算总价、运费和应付总额等
+        let totalPrice = 0;
+        let shippingFee = 0;
+        goods.forEach(item => {
+            totalPrice += item.normalPrice * item.num;
+        });
+        shippingFee = totalPrice * 0.05;
+        let finalTotal = totalPrice + shippingFee;
+
+        // 更新页面上的显示
+        document.querySelector('#total-price').textContent = '¥' + totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.querySelector('#shipping-fee').textContent = '¥' + shippingFee.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.querySelector('#final-total').textContent = finalTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+</script>
+
 </body>
 </html>

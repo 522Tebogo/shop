@@ -19,7 +19,6 @@
         }
         .navbar {
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            height: 90px;
         }
         .footer {
             background: #343a40;
@@ -35,6 +34,13 @@
             padding: 10px;
             border-radius: 4px;
             display: inline-block;
+        }
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #e9ecef;
         }
         .footer a {
             color: #adb5bd;

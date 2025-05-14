@@ -33,5 +33,9 @@ public class ItemServiceImpl implements ItemService {
         itemMapper.addNum(userid,goodid,num);
     }
 
+    @Override
+    public void updateQuantity(int userId, int goodId, int quantity) {
+        itemMapper.updateQuantity(userId, goodId, quantity);
+    }
 
 }

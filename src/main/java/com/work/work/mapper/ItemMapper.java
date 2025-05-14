@@ -12,6 +12,6 @@ public interface ItemMapper {
     List<Goods> getGoodsByUserId(int userId);
     List<Goods> isSingle(int userid,int goodid);
     void addNum(int userid, int goodid,int num);
-
+    void updateQuantity(int userId, int goodId, int quantity);
 
 }
