@@ -1,10 +1,12 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html>
 <html>
 <head>
     <base href="${base}/" />
     <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>用户注册 - 嗨购商城</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -103,84 +105,42 @@
             display: inline-block;
             font-size: 20px;
         }
+        .register-type-nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .register-type-nav a {
+            padding: 8px 15px;
+            margin: 0 5px;
+            border-radius: 20px;
+            color: #5d6bdf;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .register-type-nav a.active {
+            background-color: #5d6bdf;
+            color: white;
+        }
+        .password-requirements {
+            font-size: 0.85rem;
+            margin-top: -15px;
+            margin-bottom: 20px;
+            color: #6c757d;
+        }
+        .password-requirements i {
+            margin-right: 5px;
+        }
+        .requirement-met {
+            color: #28a745;
+        }
+        .requirement-not-met {
+            color: #dc3545;
+        }
     </style>
     <script type="text/javascript">
         $(function (){
-            let selectedFiles = [];
-            let inputId = "avatarInput";
-            let imgId = "showImage";
-            let fileInput = $('#'+inputId);
-            // 上传文件点击事件，选择文件之后就开始上传
-            fileInput.on('change', function() {
-                if (this.files.length > 0) {
-                    handleFiles(this.files);
-                }
-            });
-            function handleFiles(files) {
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-
-                    // 检查是否是图片
-                    if (!file.type.startsWith('image/')) {
-                        continue;
-                    }
-
-                    // 检查文件是否已存在
-                    let isDuplicate = false;
-                    for (let j = 0; j < selectedFiles.length; j++) {
-                        if (selectedFiles[j].name === file.name &&
-                            selectedFiles[j].size === file.size &&
-                            selectedFiles[j].lastModified === file.lastModified) {
-                            isDuplicate = true;
-                            break;
-                        }
-                    }
-
-                    if (!isDuplicate) {
-                        selectedFiles.push(file);
-                    }
-                }
-                //上传图片
-                if(selectedFiles.length>0){
-                    for (let i = 0; i < selectedFiles.length; i++) {
-                        uploadFile(selectedFiles[i]);
-                    }
-                }
-            }
-
-
-
-            // 上传单个文件
-            function uploadFile(file, callback) {
-                const formData = new FormData();
-                formData.append('file', file);
-                $.ajax({
-                    url: '/admin/upload/good',
-                    type: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        console.log(response);
-                        $('#'+imgId).attr("src",response); },
-                    error: function(xhr) {
-                        alert("上传文件失败");
-                    },
-                    complete: function() {
-                        if (callback) callback();
-                    }
-                });
-
-            }
-
-
         })
-
-
-        //用于用户中心左边菜单栏的选择项的样式
-        function setSelectedClass(url){
-            $('div.cont ul.list li a[href~="'+url+'"]').parent().addClass("current");
-        }
     </script>
 </head>
 <body class="second">
@@ -195,25 +155,38 @@
             <p class="text-muted">欢迎加入嗨购商城，请填写以下信息完成注册</p>
         </div>
         
+        <div class="register-type-nav">
+            <a href="/user/register" class="active">常规注册</a>
+            <a href="/user/register/phone">手机号注册</a>
+        </div>
+        
         <div id="registerAlert" class="alert alert-danger" style="display: none;">
             <i class="bi bi-exclamation-triangle-fill me-2"></i> <span id="alertMessage"></span>
         </div>
         
-        <form id="registerForm" method="post" enctype="multipart/form-data">
+        <form id="registerForm" enctype="multipart/form-data" accept-charset="UTF-8">
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="registerAccount" class="form-label">用户名</label>
-                        <input type="text" class="form-control" id="registerAccount" name="account" required>
-                        <div class="form-text">用户名长度2-20个字符，支持字母、数字、下划线和中文</div>
+                        <label for="account" class="form-label">用户名</label>
+                        <input type="text" class="form-control" id="account" name="account" placeholder="请设置6-10位用户名" required>
+                        <div class="password-requirements">
+                            <div><i class="bi bi-check-circle" id="req-username-start"></i> 不能以数字开头</div>
+                            <div><i class="bi bi-check-circle" id="req-username-length"></i> 长度为6-10位</div>
+                            <div><i class="bi bi-check-circle" id="req-username-alphanumeric"></i> 只包含字母和数字</div>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="registerPhone" class="form-label">手机号码</label>
-                        <input type="tel" class="form-control" id="registerPhone" name="telphone" required>
-                        <div class="form-text">请输入11位有效手机号码</div>
+                        <label for="password" class="form-label">密码</label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="请设置6-10位密码" required>
+                        <div class="password-requirements">
+                            <div><i class="bi bi-check-circle" id="req-uppercase"></i> 以大写字母开头</div>
+                            <div><i class="bi bi-check-circle" id="req-length"></i> 长度为6-10位</div>
+                            <div><i class="bi bi-check-circle" id="req-alphanumeric"></i> 只包含字母和数字</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -221,223 +194,224 @@
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="registerPassword" class="form-label">设置密码</label>
-                        <input type="password" class="form-control" id="registerPassword" name="password" required>
-                        <div class="form-text">密码长度6-32个字符</div>
+                        <label for="telphone" class="form-label">手机号码</label>
+                        <input type="tel" class="form-control" id="telphone" name="telphone" placeholder="请输入11位手机号码" pattern="^1\d{10}$">
+                        <div class="form-text">手机号必须是11位，且以1开头</div>
                     </div>
                 </div>
                 
                 <div class="col-md-6">
                     <div class="mb-3">
-                        <label for="confirmPassword" class="form-label">确认密码</label>
-                        <input type="password" class="form-control" id="confirmPassword" name="repassword" required>
-                        <div class="form-text">请再次输入密码进行确认</div>
+                        <label for="email" class="form-label">邮箱地址</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="请输入您的邮箱地址">
                     </div>
                 </div>
             </div>
             
-            <div class="mb-3">
-                <label for="registerEmail" class="form-label">电子邮箱</label>
-                <input type="email" class="form-control" id="registerEmail" name="email" required>
-                <div class="form-text">请输入有效的电子邮箱地址</div>
+            <div class="mb-4">
+                <label for="avatarInput" class="form-label">上传头像</label>
+                <input type="file" class="form-control" id="avatarInput" name="avatar" accept="image/*" max-size="10485760">
+                <div class="form-text">请选择10MB以内的图片文件</div>
+                <img id="showImage" class="img-thumbnail mt-2" style="max-width: 200px; max-height: 200px; display: none;" />
             </div>
             
-            <div class="mb-3">
-                <label for="avatarInput" class="form-label">用户头像</label>
-                <input type="file" class="form-control" id="avatarInput" name="avatar" accept="image/*">
-                <div class="form-text">支持JPG、JPEG、PNG格式，最大5MB</div>
-                <img id="avatar-preview" src="#" alt="头像预览">
-            </div>
-            
-            <div class="mb-3 form-check">
-                <input type="checkbox" class="form-check-input" id="agreement" required>
-                <label class="form-check-label" for="agreement">我已阅读并同意<a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">服务条款和隐私政策</a></label>
-            </div>
-            
-            <button type="button" class="btn btn-primary" onclick="register()">
-                <i class="bi bi-person-plus me-2"></i> 立即注册
+            <button type="button" id="submitBtn" class="btn btn-primary">
+                <i class="bi bi-person-plus-fill me-2"></i> 注册
             </button>
         </form>
         
         <div class="register-footer">
             <p>已有账号？<a href="/user/login">立即登录</a></p>
+            <p class="mt-3"><small class="text-muted">注册即表示您同意我们的服务条款和隐私政策</small></p>
         </div>
     </div>
 </div>
 
-<!-- 服务条款模态框 -->
-<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="termsModalLabel">服务条款和隐私政策</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>一、本站服务条款的确认和接纳</strong><br>
-                本站的各项电子服务的所有权和运作权归本站。本站提供的服务将完全按照其发布的服务条款和操作规则严格执行。用户同意所有服务条款并完成注册程序，才能成为本站的正式用户。用户确认：本协议条款是处理双方权利义务的约定，除非违反国家强制性法律，否则始终有效。</p>
-                
-                <p><strong>二、服务简介</strong><br>
-                本站运用自己的操作系统通过国际互联网络为用户提供网络服务。同时，用户必须：<br>
-                (1)自行配备上网的所需设备，包括个人电脑、调制解调器或其它必备上网装置。<br>
-                (2)自行负担个人上网所支付的与此服务有关的电话费用、网络费用。</p>
-                
-                <!-- 其余条款内容 -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">我已阅读并同意</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // 头像预览
     $(document).ready(function() {
+        // 验证用户名和密码
+        $('#account').on('input', validateUsername);
+        $('#password').on('input', validatePassword);
+        
+        // 头像预览
         $('#avatarInput').change(function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
+            if (this.files && this.files[0]) {
+                // 检查文件大小是否超过10MB
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                if (this.files[0].size > maxSize) {
+                    showAlert('文件大小超过限制，请选择10MB以内的图片');
+                    // 清空文件输入
+                    $(this).val('');
+                    return;
+                }
+                
+                var reader = new FileReader();
                 reader.onload = function(e) {
-                    $('#avatar-preview').attr('src', e.target.result).show();
-                }
-                reader.readAsDataURL(file);
+                    $('#showImage').attr('src', e.target.result).css('display', 'block');
+                };
+                reader.readAsDataURL(this.files[0]);
             }
         });
+        
+        // 提交注册
+        $('#submitBtn').click(function() {
+            // 验证表单
+            if (!validateForm()) {
+                return;
+            }
+            
+            // 禁用提交按钮
+            $(this).prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 注册中...');
+            
+            // 提交表单
+            var formData = new FormData($('#registerForm')[0]);
+            
+            $.ajax({
+                url: '/user/register',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                timeout: 60000, // 设置超时时间为60秒
+                success: function(response) {
+                    if (response === 'success') {
+                        $('#registerAlert').removeClass('alert-danger').addClass('alert-success')
+                            .find('#alertMessage').text('注册成功！即将跳转到登录页面...');
+                        $('#registerAlert').fadeIn();
+                        
+                        setTimeout(function() {
+                            window.location.href = '/user/login';
+                        }, 2000);
+                    } else {
+                        $('#registerAlert').removeClass('alert-success').addClass('alert-danger')
+                            .find('#alertMessage').text(response);
+                        $('#registerAlert').fadeIn();
+                        $('#submitBtn').prop('disabled', false).html('<i class="bi bi-person-plus-fill me-2"></i> 注册');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log("错误状态:", status);
+                    console.log("错误信息:", error);
+                    console.log("HTTP状态码:", xhr.status);
+                    
+                    let errorMsg = '注册失败，请稍后再试';
+                    if (xhr.status === 413) {
+                        errorMsg = '上传的文件太大，请选择小于10MB的图片';
+                    }
+                    
+                    $('#registerAlert').removeClass('alert-success').addClass('alert-danger')
+                        .find('#alertMessage').text(errorMsg);
+                    $('#registerAlert').fadeIn();
+                    $('#submitBtn').prop('disabled', false).html('<i class="bi bi-person-plus-fill me-2"></i> 注册');
+                }
+            });
+        });
+        
+        // 验证表单
+        function validateForm() {
+            const account = $('#account').val();
+            const password = $('#password').val();
+            const telphone = $('#telphone').val();
+            
+            // 验证用户名
+            if (!account) {
+                showAlert('请输入用户名');
+                return false;
+            }
+            
+            if (!validateUsername()) {
+                showAlert('用户名格式不正确，只能包含字母和数字，且不能以数字开头，6~10位');
+                return false;
+            }
+            
+            // 验证密码
+            if (!password) {
+                showAlert('请输入密码');
+                return false;
+            }
+            
+            if (!validatePassword()) {
+                showAlert('密码格式不正确，必须以大写字母开头，长度6-10位，只包含字母和数字');
+                return false;
+            }
+            
+            // 验证手机号（如果有输入）
+            if (telphone && !telphone.match(/^1\d{10}$/)) {
+                showAlert('手机号格式不正确，必须是11位数字，且第一位必须是1');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // 验证用户名格式
+        function validateUsername() {
+            const username = $('#account').val();
+            let isValid = true;
+            
+            // 验证不能以数字开头
+            const notStartWithNumber = /^[^0-9]/.test(username);
+            updateRequirement('req-username-start', notStartWithNumber);
+            isValid = isValid && notStartWithNumber;
+            
+            // 验证长度为6-10位
+            const validLength = username.length >= 6 && username.length <= 10;
+            updateRequirement('req-username-length', validLength);
+            isValid = isValid && validLength;
+            
+            // 验证只包含字母和数字
+            const alphanumericOnly = /^[a-zA-Z0-9]+$/.test(username);
+            updateRequirement('req-username-alphanumeric', alphanumericOnly);
+            isValid = isValid && alphanumericOnly;
+            
+            return isValid;
+        }
+        
+        // 验证密码格式
+        function validatePassword() {
+            const password = $('#password').val();
+            let isValid = true;
+            
+            // 验证以大写字母开头
+            const startsWithUppercase = /^[A-Z]/.test(password);
+            updateRequirement('req-uppercase', startsWithUppercase);
+            isValid = isValid && startsWithUppercase;
+            
+            // 验证长度为6-10位
+            const validLength = password.length >= 6 && password.length <= 10;
+            updateRequirement('req-length', validLength);
+            isValid = isValid && validLength;
+            
+            // 验证只包含字母和数字
+            const alphanumericOnly = /^[a-zA-Z0-9]+$/.test(password);
+            updateRequirement('req-alphanumeric', alphanumericOnly);
+            isValid = isValid && alphanumericOnly;
+            
+            return isValid;
+        }
+        
+        // 更新要求状态
+        function updateRequirement(id, isMet) {
+            const element = $('#' + id);
+            if (isMet) {
+                element.removeClass('bi-x-circle requirement-not-met').addClass('bi-check-circle requirement-met');
+            } else {
+                element.removeClass('bi-check-circle requirement-met').addClass('bi-x-circle requirement-not-met');
+            }
+        }
+        
+        // 显示提示信息
+        function showAlert(message) {
+            $('#alertMessage').text(message);
+            $('#registerAlert').fadeIn();
+            
+            // 3秒后自动隐藏
+            setTimeout(function() {
+                $('#registerAlert').fadeOut();
+            }, 3000);
+        }
     });
-    
-    // 注册功能
-    function register() {
-        // 隐藏之前的警告
-        $('#registerAlert').hide();
-        
-        const account = $('#registerAccount').val().trim();
-        const password = $('#registerPassword').val().trim();
-        const confirmPassword = $('#confirmPassword').val().trim();
-        const email = $('#registerEmail').val().trim();
-        const phone = $('#registerPhone').val().trim();
-        const avatarFile = $('#avatarInput')[0].files[0];
-
-        // 表单验证
-        if (!account || !/^[a-zA-Z0-9_\u4e00-\u9fa5]{2,20}$/.test(account)) {
-            showAlert('账号格式错误：2-20个字符，支持字母、数字、下划线和中文');
-            return;
-        }
-        if (!password || !/^.{6,32}$/.test(password)) {
-            showAlert('密码格式错误：6-32个字符');
-            return;
-        }
-        if (password !== confirmPassword) {
-            showAlert('两次输入的密码不一致');
-            return;
-        }
-        if (!phone || !/^1[3-9]\d{9}$/.test(phone)) {
-            showAlert('手机号格式错误：请输入11位有效号码');
-            return;
-        }
-        if (!email || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
-            showAlert('邮箱格式错误：请输入有效的邮箱地址');
-            return;
-        }
-        if (avatarFile && avatarFile.size > 5 * 1024 * 1024) {
-            showAlert('头像文件过大，最大支持5MB');
-            return;
-        }
-        if (!$('#agreement').is(':checked')) {
-            showAlert('请阅读并同意服务条款和隐私政策');
-            return;
-        }
-
-        // 创建 FormData 对象
-        const formData = new FormData();
-        formData.append('account', account);
-        formData.append('password', password);
-        formData.append('email', email);
-        formData.append('telphone', phone);
-        
-        // 添加头像文件，如果没有选择头像，则创建一个空文件
-        if (avatarFile) {
-            formData.append('avatar', avatarFile);
-        } else {
-            // 确保即使没有选择头像也能发送请求
-            let emptyBlob = new Blob([''], { type: 'application/octet-stream' });
-            formData.append('avatar', emptyBlob, 'empty.jpg');
-        }
-        
-        // 显示加载状态
-        const registerButton = $('.btn-primary');
-        const originalText = registerButton.html();
-        registerButton.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 注册中...');
-        registerButton.prop('disabled', true);
-
-        $.ajax({
-            url: '/user/register',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                if (response === 'success') {
-                    // 注册成功，显示成功消息并重定向
-                    showSuccessModal('注册成功！', '您的账号已创建成功，即将跳转到登录页面...');
-                    setTimeout(function() {
-                    window.location.href = "/user/login";
-                    }, 2000);
-                } else {
-                    showAlert('注册失败：' + response);
-                    registerButton.html(originalText);
-                    registerButton.prop('disabled', false);
-                }
-            },
-            error: function(xhr, status, error) {
-                showAlert('系统错误：' + (xhr.responseText || error));
-                registerButton.html(originalText);
-                registerButton.prop('disabled', false);
-            }
-        });
-    }
-    
-    function showAlert(message) {
-        $('#alertMessage').text(message);
-        $('#registerAlert').show();
-        // 滚动到警告消息
-        $('html, body').animate({
-            scrollTop: $('#registerAlert').offset().top - 100
-        }, 200);
-    }
-    
-    function showSuccessModal(title, message) {
-        // 创建成功模态框
-        const modalHtml = `
-            <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header bg-success text-white">
-                            <h5 class="modal-title">${title}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="text-center mb-4">
-                                <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
-                            </div>
-                            <p class="text-center">${message}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // 添加到页面并显示
-        $('body').append(modalHtml);
-        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-        successModal.show();
-        
-        // 模态框关闭后移除
-        $('#successModal').on('hidden.bs.modal', function() {
-            $(this).remove();
-        });
-    }
 </script>
 </body>
 </html>
+

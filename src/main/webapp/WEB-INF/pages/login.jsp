@@ -5,6 +5,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>用户登录 - 嗨购商城</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -108,6 +109,23 @@
             background-color: #5d6bdf;
             color: white;
         }
+        .login-type-nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .login-type-nav a {
+            padding: 8px 15px;
+            margin: 0 5px;
+            border-radius: 20px;
+            color: #5d6bdf;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .login-type-nav a.active {
+            background-color: #5d6bdf;
+            color: white;
+        }
     </style>
 </head>
 
@@ -127,10 +145,10 @@
                 <p class="text-muted">欢迎回来！请输入您的账号信息</p>
             </div>
             
-            <!-- 登录类型切换 -->
-            <div class="login-type-switcher">
-                <button type="button" class="active" id="userLoginBtn">用户登录</button>
-                <button type="button" id="adminLoginBtn">管理员登录</button>
+            <div class="login-type-nav">
+                <a href="/user/login" class="active">账号密码登录</a>
+                <a href="/user/login/phone">手机验证码登录</a>
+                <a href="/user/login/email">邮箱验证码登录</a>
             </div>
             
             <!-- 显示成功消息 -->
@@ -152,11 +170,13 @@
                 <div class="mb-3">
                     <label for="account" class="form-label">用户名</label>
                     <input type="text" class="form-control" id="account" name="account" placeholder="请输入您的用户名" required>
+                    <div class="form-text">用户名只能包含字母和数字，且不能以数字开头，6~10位</div>
                 </div>
                 
                 <div class="mb-3">
                     <label for="password" class="form-label">密码</label>
                     <input type="password" class="form-control" id="password" name="password" placeholder="请输入您的密码" required>
+                    <div class="form-text">密码只能包含字母和数字，且必须以大写字母开头，6~10位</div>
                 </div>
                 
                 <div class="mb-3 form-check">
@@ -166,23 +186,6 @@
                 
                 <button type="submit" class="btn btn-primary">
                     <i class="bi bi-box-arrow-in-right me-2"></i> 登录
-                </button>
-            </form>
-            
-            <!-- 管理员登录表单 (隐藏) -->
-            <form action="#" method="post" id="adminLoginForm" style="display: none;">
-                <div class="mb-3">
-                    <label for="adminAccount" class="form-label">管理员账号</label>
-                    <input type="text" class="form-control" id="adminAccount" name="adminAccount" placeholder="请输入管理员账号" required>
-                </div>
-                
-                <div class="mb-3">
-                    <label for="adminPassword" class="form-label">管理员密码</label>
-                    <input type="password" class="form-control" id="adminPassword" name="adminPassword" placeholder="请输入管理员密码" required>
-                </div>
-                
-                <button type="button" class="btn btn-primary" onclick="showAdminLoginMsg()">
-                    <i class="bi bi-box-arrow-in-right me-2"></i> 管理员登录
                 </button>
             </form>
             
@@ -197,28 +200,12 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            // 切换登录类型
-            $("#userLoginBtn").click(function() {
-                $(this).addClass("active");
-                $("#adminLoginBtn").removeClass("active");
-                $("#userLoginForm").show();
-                $("#adminLoginForm").hide();
-                $(".login-header h2").text("用户登录");
-            });
-            
-            $("#adminLoginBtn").click(function() {
-                $(this).addClass("active");
-                $("#userLoginBtn").removeClass("active");
-                $("#userLoginForm").hide();
-                $("#adminLoginForm").show();
-                $(".login-header h2").text("管理员登录");
+            // 修复登录切换方式
+            $('.login-type-nav a').click(function(e) {
+                const href = $(this).attr('href');
+                window.location.href = href;
             });
         });
-        
-        // 管理员登录提示（仅作为演示，实际功能由其他组员实现）
-        function showAdminLoginMsg() {
-            alert("管理员登录功能由其他组员负责实现，当前仅提供用户登录功能。");
-        }
     </script>
 </body>
 </html>

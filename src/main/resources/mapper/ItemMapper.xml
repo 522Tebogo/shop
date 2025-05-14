@@ -11,15 +11,15 @@
     </insert>
 
     <select id="getGoodsByUserId" resultType="com.work.work.entity.Goods">
-        SELECT goods.id,goods.name,goods.NormalPrice,goods.SurprisePrice,goods.imageUrl,goods.description,wn_caritem.num
+        SELECT goods.id,goods.name,goods.NormalPrice,goods.SurprisePrice,goods.imageUrl,goods.description,wn_caritem.num,wn_caritem.code
             FROM wn_caritem INNER JOIN wn_user on wn_caritem.userid = wn_user.id
                                  INNER JOIN goods on wn_caritem.goodid = goods.id
-        WHERE wn_caritem.userid = #{userid}
+        WHERE wn_caritem.userid = #{userid} AND code IS NULL
     </select>
 
     <select id="isSingle">
 
-    SELECT * FROM wn_caritem where userid = #{userid} and goodid=#{goodid}
+    SELECT * FROM wn_caritem where userid = #{userid} and goodid=#{goodid} and code is null
     </select>
 
     <select id="addNum">

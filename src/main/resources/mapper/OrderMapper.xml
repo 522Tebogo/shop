@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--一定要写对-->
+<mapper namespace="com.work.work.mapper.OrderMapper">
+
+    <insert id="insertOrder" parameterType="com.work.work.entity.Order">
+        INSERT INTO orders (userid, order_code, totalPrice, create_time)
+        VALUES (#{userId}, #{order_code}, #{totalPrice}, NOW())
+    </insert>
+
+    <update id="insertCode">
+        UPDATE wn_caritem
+        SET code = #{orderCode}
+        WHERE userid = #{userId} AND code is null
+    </update>
+</mapper>

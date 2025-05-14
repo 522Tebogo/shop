@@ -38,9 +38,7 @@ public class CarController {
                 if (res == 1) {
                     System.out.println("添加成功");
                     List<Goods> goods = itemService.getGoodsByUserId(user.getId());
-
                     model.addAttribute("goods", goods);
-
                     return "car";
                 } else {
                     System.out.println("添加失败");

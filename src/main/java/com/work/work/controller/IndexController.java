@@ -14,32 +14,33 @@ import java.util.List;
 @Controller
 @RequestMapping("/")
 public class IndexController {
+
     @Autowired
     GoodService goodService;
     @GetMapping("")
     public String index(HttpSession session, Model model) {
-
+        // Get user info from session
         Object user = session.getAttribute("user");
-        
-
+        List<Goods> goods = goodService.getRandomGoods();
+        // If user is logged in, add user info to model
         if (user != null) {
             model.addAttribute("user", user);
         }
-        
-
+        model.addAttribute("goods", goods);
+        // If there is a success message, get it from session and add to model
         Object successMessage = session.getAttribute("successMessage");
         if (successMessage != null) {
             model.addAttribute("successMessage", successMessage);
+            // Clear message after displaying it once
             session.removeAttribute("successMessage");
         }
-        List<Goods> goods =goodService.getRandomGoods();
-        System.out.println("下列是商品信息："+goods);
-        session.setAttribute("goods", goods);
+
         return "index";
     }
-    
+
     @GetMapping("/index")
     public String redirectToIndex() {
+        // Redirect /index requests to homepage
         return "redirect:/";
     }
 }

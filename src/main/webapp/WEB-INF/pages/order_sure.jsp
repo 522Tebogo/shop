@@ -146,7 +146,6 @@
 
 <div class="container mt-5">
     <h2 class="section-title">订单确认</h2>
-
     <div class="order-total">
         <h4>订单信息</h4>
         <hr>
@@ -165,6 +164,7 @@
             <c:set var="itemTotal" value="${item.normalPrice * item.num}" />
             <c:set var="totalPrice" value="${totalPrice + itemTotal}" />
         </c:forEach>
+
         <c:set var="shippingFee" value="${totalPrice * 0.05}" />
         <c:set var="finalTotal" value="${totalPrice + shippingFee}" />
         <c:forEach var="item" items="${goods}">
@@ -196,7 +196,12 @@
             <h5 class="text-danger fw-bold">¥<span id="final-total"><fmt:formatNumber value="${finalTotal}" type="number" maxFractionDigits="2" minFractionDigits="2"/></span></h5>
         </div>
         <div class="text-end mt-3">
-            <button class="btn btn-primary"><i class="bi bi-credit-card"></i> 确认订单</button>
+            <form action="/order/submit" method="POST">
+                <input type="hidden" name="userId" value="${user.id}"/>
+                <input type="hidden" name="totalPrice" value="${finalTotal}"/>
+                <input type="hidden" name="orderCode" value="${orderId}"/>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-credit-card"></i> 确认订单</button>
+            </form>
         </div>
     </div>
 </div>
@@ -209,16 +214,21 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // 模拟生成订单编号和当前时间
+    // 模拟生成订单编号（格式：YYYYMMDDHHMMSS）
     const currentDate = new Date();
     const orderId = currentDate.getFullYear() + ('0' + (currentDate.getMonth() + 1)).slice(-2) + ('0' + currentDate.getDate()).slice(-2) +
         ('0' + currentDate.getHours()).slice(-2) + ('0' + currentDate.getMinutes()).slice(-2) +
         ('0' + currentDate.getSeconds()).slice(-2);
     document.getElementById('order-id').textContent = orderId;
 
+    // 在隐藏的表单字段中设置订单号
+    document.getElementsByName('orderCode')[0].value = orderId;
+
+    // 显示当前时间
     const currentTime = currentDate.toLocaleString();
     document.getElementById('current-time').textContent = currentTime;
 </script>
+
 
 </body>
 </html>

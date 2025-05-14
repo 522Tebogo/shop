@@ -2,8 +2,6 @@ package com.work.work.entity;
 
 import lombok.Data;
 
-import java.util.Date;
-
 @Data
 public class Admin {
     private int id;

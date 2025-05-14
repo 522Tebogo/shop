@@ -271,10 +271,10 @@
                 </div>
             </c:forEach>
         </div>
-        </div>
-        <div class="text-center mt-4">
-            <a href="#" class="btn btn-primary">查看更多商品 <i class="bi bi-arrow-right"></i></a>
-        </div>
+    </div>
+    <div class="text-center mt-4">
+        <a href="#" class="btn btn-primary">查看更多商品 <i class="bi bi-arrow-right"></i></a>
+    </div>
     </div>
 </section>
 
