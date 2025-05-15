@@ -38,4 +38,9 @@ public class ItemServiceImpl implements ItemService {
         itemMapper.updateQuantity(userId, goodId, quantity);
     }
 
+    @Override
+    public int removeById(int userId, int goodId) {
+        return itemMapper.removeById(userId,goodId);
+    }
+
 }

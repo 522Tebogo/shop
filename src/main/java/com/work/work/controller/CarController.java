@@ -83,4 +83,19 @@ public class CarController {
         return response;
     }
 
+    @GetMapping("/remove/{goodId}")
+    public String remove(@PathVariable("goodId") int goodId, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        int userId = user.getId();
+        List<Goods> goods = itemService.getGoodsByUserId(userId);
+        int Success = itemService.removeById(userId,goodId);
+        if(Success==1) {
+            System.out.println("删除成功");
+            return "car";
+        }
+        else{
+            System.out.println("失败");
+            return "car";
+        }
+    }
 }

@@ -2,13 +2,11 @@ package com.work.work.service;
 
 import com.work.work.entity.User;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
 
-@Service
 public interface UserService {
 
     User login(String account, String password, HttpSession session);

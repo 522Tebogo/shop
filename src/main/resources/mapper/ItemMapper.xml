@@ -31,4 +31,9 @@
         SET num = #{quantity}
         WHERE userid = #{userId} AND goodid = #{goodId}
     </update>
+
+    <delete id="removeById">
+
+    DELETE FROM wn_caritem WHERE userid = #{userId} AND goodid = #{goodId}
+    </delete>
 </mapper>

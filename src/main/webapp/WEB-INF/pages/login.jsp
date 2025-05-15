@@ -16,7 +16,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .login-container {
-            max-width: 450px;
+            max-width: 550px;
             margin: 7% auto;
             padding: 30px;
             background: white;
@@ -110,6 +110,7 @@
             color: white;
         }
         .login-type-nav {
+            width: 500px;
             display: flex;
             justify-content: center;
             margin-bottom: 20px;

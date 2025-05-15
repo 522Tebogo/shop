@@ -163,7 +163,7 @@
                     <ul class="dropdown-menu" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> 个人中心</a></li>
                         <li><a class="dropdown-item" href="/car/toCar"><i class="bi bi-person"></i>购物车</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-basket"></i> 我的订单</a></li>
+                        <li><a class="dropdown-item" href="/order/getOrder"><i class="bi bi-basket"></i> 我的订单</a></li>
                         <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> 账户设置</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/user/logout"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
@@ -271,10 +271,10 @@
                 </div>
             </c:forEach>
         </div>
-    </div>
-    <div class="text-center mt-4">
-        <a href="#" class="btn btn-primary">查看更多商品 <i class="bi bi-arrow-right"></i></a>
-    </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="#" class="btn btn-primary">查看更多商品 <i class="bi bi-arrow-right"></i></a>
+        </div>
     </div>
 </section>
 

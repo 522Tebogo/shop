@@ -189,7 +189,7 @@
                     </div>
                 </div>
                 <div class="cart-item-actions">
-                    <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> 移除</button>
+                    <a href="/car/remove/${item.id}"> <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> 移除</button> </a>
                 </div>
             </div>
         </c:forEach>
