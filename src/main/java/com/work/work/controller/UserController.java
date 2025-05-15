@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -298,7 +300,9 @@ public class UserController {
         if (user == null) {
             return "redirect:/user/login";
         }
-
+        LocalDateTime localDateTime = user.getRegTime();
+        Date date = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+        model.addAttribute("regTime", date);
         model.addAttribute("user", user);
         return "profile";
     }
@@ -412,6 +416,7 @@ public class UserController {
         }
 
         if (userService.changePassword(userId, oldPassword, newPassword, session)) {
+            session.removeAttribute("user");
             return "success";
         } else {
             String errorMsg = (String) session.getAttribute("msg");

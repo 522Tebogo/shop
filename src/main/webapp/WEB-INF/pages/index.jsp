@@ -161,10 +161,13 @@
                         我的账户
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> 个人中心</a></li>
+                        <li><a class="dropdown-item" href="/user/profile"><i class="bi bi-person"></i> 个人资料</a></li>
                         <li><a class="dropdown-item" href="/car/toCar"><i class="bi bi-person"></i>购物车</a></li>
                         <li><a class="dropdown-item" href="/order/getOrder"><i class="bi bi-basket"></i> 我的订单</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> 账户设置</a></li>
+                        <li><a class="dropdown-item" href="/user/password"><i class="bi bi-key"></i> 修改密码</a></li>
+                        <li><a class="dropdown-item" href="/user/phone"><i class="bi bi-phone"></i> 绑定手机</a></li>
+                        <li><a class="dropdown-item" href="/user/email"><i class="bi bi-envelope"></i> 绑定邮箱</a></li>
+
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/user/logout"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
                     </ul>
@@ -254,27 +257,29 @@
             <c:forEach var="item" items="${goods}">
                 <div class="col-md-3 mb-4">
                     <div class="card h-100">
-                        <div class="product-image" >
-                            <img src="${item.imageUrl}" alt="${item.name}" style="opacity: 0.7" class="img-fluid">
+                        <div class="product-image">
+                            <img src="${item.imageUrl}" alt="${item.name}" class="img-fluid">
                         </div>
                         <div class="card-body">
                             <h5 class="card-title">${item.name}</h5>
-                            <p class="card-text text-danger fw-bold">¥${item.normalPrice}</p>
-                            <p class="card-text"><small class="text-muted">${item.description}</small></p>
+                            <p class="text-danger fw-bold">惊喜价 ¥${item.surprisePrice}</p>
+                            <p class="text-muted text-decoration-line-through">原价 ¥${item.normalPrice}</p>
+                            <p class="text-muted small">${item.description}</p>
+                            <p class="text-secondary small">分类：${item.category}</p>
                         </div>
                         <div class="card-footer bg-white border-top-0">
-                            <button class="btn btn-outline-primary w-100">
-                                <a href="/good/single/${item.id}"><i class="bi bi-basket"></i> 查看详情</a>
-                            </button>
+                            <a href="/good/single/${item.id}" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-basket"></i> 查看详情
+                            </a>
                         </div>
                     </div>
                 </div>
             </c:forEach>
         </div>
-        </div>
-        <div class="text-center mt-4">
-            <a href="#" class="btn btn-primary">查看更多商品 <i class="bi bi-arrow-right"></i></a>
-        </div>
+    </div>
+    <div class="text-center mt-4">
+        <a href="/good/all" class="btn btn-primary">查看更多商品 <i class="bi bi-arrow-right"></i></a>
+    </div>
     </div>
 </section>
 
@@ -335,7 +340,7 @@
         }, 5000);
     });
 </script>
-```
+
 
 </body>
 </html>

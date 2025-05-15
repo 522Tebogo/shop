@@ -29,8 +29,14 @@ public class CarController {
     }
 
     @PostMapping("/add")
-    public String add(@RequestParam("goodId") int goodid, @RequestParam("quantity") int num, HttpSession session,Model model) {
+    public String add(@RequestParam("goodId") int goodid, @RequestParam("quantity") int num,  HttpSession session,Model model) {
+
             User user = (User) session.getAttribute("user");
+            if(user ==null)
+            {
+                return "login";
+            }
+
             int userid = user.getId();
             boolean isEmpty = this.isSingle(userid,goodid);
             if(isEmpty==true) {
@@ -38,6 +44,7 @@ public class CarController {
                 if (res == 1) {
                     System.out.println("添加成功");
                     List<Goods> goods = itemService.getGoodsByUserId(user.getId());
+                    System.out.println("拿到的商品信息:"+goods);
                     model.addAttribute("goods", goods);
                     return "car";
                 } else {
@@ -82,15 +89,39 @@ public class CarController {
         response.put("updatedGoods", updatedGoods);
         return response;
     }
+    @PostMapping("/updateQuantityTwo")
+    @ResponseBody
+    public Map<String, Object> updateQuantityTwo(@RequestBody Map<String, Object> requestData, HttpSession session) {
 
-    @GetMapping("/remove/{goodId}")
-    public String remove(@PathVariable("goodId") int goodId, HttpSession session) {
         User user = (User) session.getAttribute("user");
         int userId = user.getId();
-        List<Goods> goods = itemService.getGoodsByUserId(userId);
+        // goodId 可能是字符串，先转成字符串，再转成int
+        int goodId = Integer.parseInt(requestData.get("goodId").toString());
+        int quantity = Integer.parseInt(requestData.get("quantity").toString());
+        // orderCode 是长整型字符串，转成Long
+        Long orderCode = Long.parseLong(requestData.get("orderCode").toString());
+        System.out.println("orderCode在这里:"+orderCode);
+        // 更新数据库中的商品数量
+        itemService.updateQuantity(userId, goodId, quantity);
+
+        // 获取更新后的购物车商品列表
+        List<Goods> updatedGoods = itemService.getGoodsByUserIdTwo(orderCode,userId);
+        System.out.println("商品列表:"+updatedGoods);
+        // 返回更新后的数据
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("updatedGoods", updatedGoods);
+        return response;
+    }
+    @GetMapping("/remove/{goodId}")
+    public String remove(@PathVariable("goodId") int goodId, HttpSession session,Model model) {
+        User user = (User) session.getAttribute("user");
+        int userId = user.getId();
         int Success = itemService.removeById(userId,goodId);
         if(Success==1) {
             System.out.println("删除成功");
+            List<Goods> goods = itemService.getGoodsByUserId(userId);
+            model.addAttribute("goods", goods);
             return "car";
         }
         else{

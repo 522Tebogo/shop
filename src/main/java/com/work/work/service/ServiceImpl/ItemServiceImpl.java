@@ -19,6 +19,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public Integer addGoodItems(int userid, int goodid, int num, long orderCode) {
+        return itemMapper.addGoodItems(userid,goodid,num,orderCode);
+    }
+
+    @Override
     public List<Goods> getGoodsByUserId(int userId) {
         return itemMapper.getGoodsByUserId(userId);
     }
@@ -41,6 +46,16 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public int removeById(int userId, int goodId) {
         return itemMapper.removeById(userId,goodId);
+    }
+
+    @Override
+    public List<Goods> getGoodsByUserIdTwo(long orderCode,int userId) {
+        return itemMapper.getGoodsByUserIdTwo(orderCode,userId);
+    }
+
+    @Override
+    public Object getItemByCod(long orderCode) {
+        return itemMapper.getItemByCod(orderCode);
     }
 
 }

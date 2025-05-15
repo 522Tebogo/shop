@@ -3,17 +3,17 @@ package com.work.work.controller;
 import com.work.work.entity.Goods;
 import com.work.work.entity.Order;
 import com.work.work.entity.User;
+import com.work.work.service.GoodService;
 import com.work.work.service.ItemService;
 import com.work.work.service.OrderService;
 import jakarta.servlet.http.HttpSession;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +21,8 @@ import java.util.Map;
 @Controller
 @RequestMapping("/order")
 public class OrderController {
+    @Autowired
+    GoodService goodService;
     @Autowired
     ItemService itemService;
     @GetMapping("/toOrder")
@@ -42,6 +44,7 @@ public class OrderController {
                               @RequestParam("orderCode") long orderCode,
                               Model model) {
         // 保存订单
+        System.out.println("到了确认controller");
         boolean success = orderService.createOrder(userId, totalPrice, orderCode,session);
 
         if (success) {
@@ -51,9 +54,12 @@ public class OrderController {
         }
         return "order_sure"; // 返回确认订单页面
     }
+    // 提交订单
+
 
     @GetMapping("/getOrder")
     public String getOrder(HttpSession session, Model model) {
+
         User user = (User) session.getAttribute("user");
         int userId = user.getId();
         List<Order> orderList = orderService.getOrderListByUserId(userId);
@@ -71,5 +77,68 @@ public class OrderController {
         model.addAttribute("orderGoodsMap", orderGoodsMap);
         return "order_list";
     }
+
+
+
+
+    @GetMapping("/delete/{orderCode}")
+    public String deleteOrderByCode(HttpSession session, @PathVariable("orderCode") long orderCode,Model model) {
+        System.out.println("删除中");
+        User user = (User) session.getAttribute("user");
+        int userId = user.getId();
+        boolean res = orderService.deleteOrderByCode(orderCode, userId);
+        if (res) {
+            List<Order> orderList = orderService.getOrderListByUserId(userId);
+
+            // 为每个订单设置商品列表（可用Map或者给Order加个属性）
+            Map<Long, List<Goods>> orderGoodsMap = new HashMap<>();
+            for (Order order : orderList) {
+                List<Goods> goodsList = orderService.getGoodsByOrderCode(order.getOrderCode());
+                orderGoodsMap.put(order.getOrderCode(), goodsList);
+            }
+            model.addAttribute("orderList", orderList);
+            model.addAttribute("orderGoodsMap", orderGoodsMap);
+            System.out.println("删除成功");
+            return "order_list";
+        }
+        else {
+            System.out.println("删除失败");
+            return "order_list";
+        }
+
+    }
+    @GetMapping("/edit/{orderCode}")
+    public String showEditPage(@PathVariable(name =  "orderCode") long orderCode, Model model) {
+        List<Goods> goods = orderService.getGoodsByOrderCode(orderCode);
+        model.addAttribute("goods", goods);
+        model.addAttribute("orderCode", orderCode);
+        return "order_edit"; // 你的 JSP 页面名
+    }
+
+    @PostMapping("/update")
+    public String updateOrder(@RequestParam("orderCode") long orderCode,
+                              @RequestParam("goodsId") List<Integer> goodsIds,
+                              @RequestParam("nums") List<Integer> nums,
+                              HttpSession session,Model model) {
+        System.out.println("商品数量:"+nums);
+        User user = (User) session.getAttribute("user");
+        int userId = user.getId();
+        // 调用服务层更新购物车和订单信息
+        orderService.updateOrder(orderCode, userId, goodsIds, nums);
+        System.out.println("更新成功");
+        List<Order> orderList = orderService.getOrderListByUserId(userId);
+
+        // 为每个订单设置商品列表（可用Map或者给Order加个属性）
+        Map<Long, List<Goods>> orderGoodsMap = new HashMap<>();
+        for (Order order : orderList) {
+            List<Goods> goodsList = orderService.getGoodsByOrderCode(order.getOrderCode());
+            orderGoodsMap.put(order.getOrderCode(), goodsList);
+        }
+        model.addAttribute("orderList", orderList);
+        model.addAttribute("orderGoodsMap", orderGoodsMap);
+        // 更新成功后跳转到订单列表页
+        return "order_list";
+    }
+
 
 }

@@ -269,7 +269,10 @@
                 data: formData,
                 success: function(response) {
                     if (response === 'success') {
-                        showAlert('success', '密码修改成功');
+                        showAlert('success', '密码修改成功,即将返回登录界面');
+                        setTimeout(function() {
+                            window.location.href = '/';
+                        }, 3000);
                         // 清空表单
                         $('#passwordForm')[0].reset();
                     } else {

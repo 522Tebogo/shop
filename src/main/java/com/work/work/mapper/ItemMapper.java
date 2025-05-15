@@ -9,9 +9,13 @@ import java.util.List;
 public interface ItemMapper {
 
     Integer addGoodItem(int userid, int goodid, int num);
+    Integer addGoodItems(int userid, int goodid, int num,long orderCode);
     List<Goods> getGoodsByUserId(int userId);
     List<Goods> isSingle(int userid,int goodid);
     void addNum(int userid, int goodid,int num);
     void updateQuantity(int userId, int goodId, int quantity);
     int removeById(int userId, int goodId);
+    List<Goods> getGoodsByUserIdTwo(long orderCode,int userId);
+    Object getItemByCod(long orderCode);
+
 }

@@ -161,11 +161,11 @@
         <h5>订单详情</h5>
         <c:set var="totalPrice" value="0" />
         <c:forEach var="item" items="${goods}">
-            <c:set var="itemTotal" value="${item.normalPrice * item.num}" />
+            <c:set var="itemTotal" value="${item.surprisePrice * item.num}" />
             <c:set var="totalPrice" value="${totalPrice + itemTotal}" />
         </c:forEach>
 
-        <c:set var="shippingFee" value="${totalPrice * 0.05}" />
+        <c:set var="shippingFee" value="${totalPrice * 0.02}" />
         <c:set var="finalTotal" value="${totalPrice + shippingFee}" />
         <c:forEach var="item" items="${goods}">
 
@@ -175,9 +175,9 @@
                 <div class="order-item-details">
                     <h5>${item.name}</h5>
                     <p class="text-muted">规格: ${item.description}</p>
-                    <p class="text-danger fw-bold">¥<fmt:formatNumber value="${item.normalPrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
+                    <p class="text-danger fw-bold">¥<fmt:formatNumber value="${item.surprisePrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
                     <p class="text-muted">数量: ${item.num}</p>
-                    <p class="text-muted">小计: ¥<fmt:formatNumber value="${item.normalPrice * item.num}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
+                    <p class="text-muted">小计: ¥<fmt:formatNumber value="${item.surprisePrice * item.num}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
                 </div>
             </div>
         </c:forEach>

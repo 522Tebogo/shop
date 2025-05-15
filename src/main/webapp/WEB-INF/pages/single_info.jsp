@@ -184,11 +184,8 @@
                     <button type="submit" class="btn btn-primary btn-lg w-100">
                         <i class="bi bi-cart-plus"></i> 加入购物车
                     </button>
-
-                    <a href="/order/buyNow/${good.id}" class="btn btn-outline-danger btn-lg w-100">
-                        <i class="bi bi-lightning"></i> 立即购买
-                    </a>
                 </form>
+
             </div>
         </div>
     </div>
@@ -246,11 +243,14 @@
 <script>
     const quantityInput = document.getElementById('quantity');
     const hiddenQuantity = document.getElementById('hiddenQuantity');
+    const buyQuantity = document.getElementById('buyQuantity'); // 新增
 
     quantityInput.addEventListener('input', () => {
         const value = parseInt(quantityInput.value) || 1;
         hiddenQuantity.value = value;
+        buyQuantity.value = value; // 同步给立即购买的表单
     });
+
 </script>
 
 </body>

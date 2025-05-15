@@ -206,7 +206,7 @@
                     <div class="col-md-6">
                         <div class="mb-3">
                             <label for="regTime" class="form-label">注册时间</label>
-                            <input type="text" class="form-control" id="regTime" value="<fmt:formatDate value='${user.regTime}' pattern='yyyy-MM-dd HH:mm:ss'/>" readonly>
+                            <input type="text" class="form-control" id="regTime" value="<fmt:formatDate value='${regTime}' pattern='yyyy-MM-dd HH:mm:ss'/>" readonly>
                         </div>
                     </div>
 

@@ -168,10 +168,10 @@
         <%-- 计算总价、运费、应付总额 --%>
         <c:set var="totalPrice" value="0" />
         <c:forEach var="item" items="${goods}">
-            <c:set var="itemTotal" value="${item.normalPrice * item.num}" />
+            <c:set var="itemTotal" value="${item.surprisePrice * item.num}" />
             <c:set var="totalPrice" value="${totalPrice + itemTotal}" />
         </c:forEach>
-        <c:set var="shippingFee" value="${totalPrice * 0.05}" />
+        <c:set var="shippingFee" value="${totalPrice * 0.02}" />
         <c:set var="finalTotal" value="${totalPrice + shippingFee}" />
 
         <%-- 商品列表显示 --%>
@@ -181,7 +181,7 @@
                 <div class="cart-item-details">
                     <h5>${item.name}</h5>
                     <p class="text-muted">规格: ${item.description}</p>
-                    <p class="text-danger fw-bold">¥<fmt:formatNumber value="${item.normalPrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
+                    <p class="text-danger fw-bold">¥<fmt:formatNumber value="${item.surprisePrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
 
                     <div class="d-flex align-items-center">
                         <label for="quantity-${item.id}" class="me-2">数量:</label>
@@ -203,7 +203,7 @@
                 <p class="fw-bold" id="total-price">¥<fmt:formatNumber value="${totalPrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
             </div>
             <div class="d-flex justify-content-between">
-                <p>运费 (5%):</p>
+                <p>运费 (2%):</p>
                 <p class="fw-bold" id="shipping-fee">¥<fmt:formatNumber value="${shippingFee}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
             </div>
             <hr>
@@ -303,9 +303,9 @@
         let totalPrice = 0;
         let shippingFee = 0;
         goods.forEach(item => {
-            totalPrice += item.normalPrice * item.num;
+            totalPrice += item.surprisePrice * item.num;
         });
-        shippingFee = totalPrice * 0.05;
+        shippingFee = totalPrice * 0.02;
         let finalTotal = totalPrice + shippingFee;
 
         // 更新页面上的显示

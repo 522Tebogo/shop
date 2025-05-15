@@ -42,4 +42,31 @@ public class OrderServiceImpl implements OrderService {
     public Order getOrderByOrderCode(long orderCode) {
         return orderMapper.getOrderByOrderCode(orderCode);
     }
+
+    @Override
+    public boolean deleteOrderByCode(long orderCode, int userId) {
+        return orderMapper.deleteCarItemByCodeAndUserId(orderCode,userId)==1 && orderMapper.deleteOrderByCodeAndUserId(orderCode,userId)==1;
+    }
+    @Override
+    public void updateOrder(long orderCode, int userId, List<Integer> goodsIds, List<Integer> quantities) {
+        // 遍历商品ID和数量，更新购物车数量
+        for (int i = 0; i < goodsIds.size(); i++) {
+            int goodId = goodsIds.get(i);
+            int quantity = quantities.get(i);
+            System.out.println("userId:"+userId+",goodId:"+goodId+",quantity:"+quantity);
+            orderMapper.updateCarItemQuantity(userId, goodId, orderCode, quantity);
+        }
+
+        // 重新计算订单总价
+        List<Goods> goodsList = orderMapper.getGoodsByOrderCode(orderCode);
+        double totalPrice = 0;
+        for (Goods g : goodsList) {
+            totalPrice += g.getSurprisePrice() * g.getNum()+(g.getSurprisePrice() * g.getNum())*0.02;
+        }
+
+        // 更新订单总价
+        orderMapper.updateOrderTotalPrice(orderCode, totalPrice);
+    }
+
+
 }

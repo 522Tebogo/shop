@@ -162,7 +162,13 @@
                         订单号：${order.orderCode}
                         <span class="order-info float-end">
                             下单时间：<fmt:formatDate value="${order.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/>
-                            &nbsp;&nbsp; 总金额：<span class="text-danger fw-bold">¥${order.totalPrice}</span>
+总金额：<span class="text-danger fw-bold">¥<fmt:formatNumber value="${order.totalPrice}" type="number" minFractionDigits="2" maxFractionDigits="2"/></span>
+                            <a href="/order/edit/${order.orderCode}" class="btn btn-sm btn-outline-primary me-2">
+            <i class="bi bi-pencil"></i> 编辑
+        </a>
+        <a href="/order/delete/${order.orderCode}" class="btn btn-sm btn-outline-danger" onclick="return confirm('确定要删除该订单吗？');">
+            <i class="bi bi-trash"></i> 删除
+        </a>
                         </span>
                     </div>
 

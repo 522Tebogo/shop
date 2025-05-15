@@ -30,5 +30,23 @@
     <select id="getOrderByOrderCode">
     SELECT * FROM orders WHERE order_code = #{orderCode}
     </select>
+    <delete id="deleteCarItemByCodeAndUserId">
+        DELETE FROM wn_caritem WHERE code = #{orderCode} AND userid = #{userId}
+    </delete>
+
+    <delete id="deleteOrderByCodeAndUserId">
+        DELETE FROM orders WHERE order_code = #{orderCode} AND userid = #{userId}
+    </delete>
+    <update id="updateCarItemQuantity">
+        UPDATE wn_caritem
+        SET num = #{quantity}
+        WHERE userid = #{userId} AND goodid = #{goodId} AND code = #{orderCode}
+    </update>
+
+    <update id="updateOrderTotalPrice">
+        UPDATE orders
+        SET totalPrice = #{totalPrice}
+        WHERE order_code = #{orderCode}
+    </update>
 
 </mapper>
