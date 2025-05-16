@@ -30,13 +30,13 @@
     <select id="getOrderByOrderCode">
     SELECT * FROM orders WHERE order_code = #{orderCode}
     </select>
-    <delete id="deleteCarItemByCodeAndUserId">
-        DELETE FROM wn_caritem WHERE code = #{orderCode} AND userid = #{userId}
+    <delete id="deleteOrderAndItems">
+        DELETE orders, wn_caritem
+    FROM orders
+    LEFT JOIN wn_caritem ON orders.order_code = wn_caritem.code AND orders.userid = wn_caritem.userid
+    WHERE orders.order_code = #{orderCode} AND orders.userid = #{userId}
     </delete>
 
-    <delete id="deleteOrderByCodeAndUserId">
-        DELETE FROM orders WHERE order_code = #{orderCode} AND userid = #{userId}
-    </delete>
 
     <update id="updateCarItemQuantity">
         UPDATE wn_caritem
