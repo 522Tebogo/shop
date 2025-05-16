@@ -31,7 +31,7 @@
         UPDATE goods
         SET stock = stock + #{num}
         WHERE id = #{goodid}
-          AND stock - #{num} >= 0;
+          AND (#{num} >= 0 OR stock + #{num} >= 0);
         </update>
 
     <select id="getCountByDoubleId">

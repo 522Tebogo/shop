@@ -53,5 +53,10 @@ public class ItemServiceImpl implements ItemService {
         return itemMapper.getGoodsByUserIdTwo(orderCode,userId);
     }
 
+    @Override
+    public void updateQuantitys(int userId, int goodId, long orderCode, int quantity) {
+        itemMapper.updateQuantitys(userId,goodId,orderCode,quantity);
+    }
+
 
 }

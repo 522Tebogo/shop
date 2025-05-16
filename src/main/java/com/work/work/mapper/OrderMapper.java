@@ -13,8 +13,7 @@ public interface OrderMapper {
     List<Order> getOrderListByUserId(int userId);
     List<Goods> getGoodsByOrderCode(long orderCode);
     Order getOrderByOrderCode(long orderCode);
-    int deleteCarItemByCodeAndUserId(long orderCode,int userId);
-    int deleteOrderByCodeAndUserId(long orderCode,int userId);
+    int deleteOrderAndItems(long orderCode,int userId);
     int updateCarItemQuantity(int userId,int goodId,long orderCode,int quantity);
     int updateOrderTotalPrice(long orderCode,double totalPrice);
     List<Integer> getGoodIdByCode(long orderCode);

@@ -59,7 +59,6 @@ public class OrderController {
 
     @GetMapping("/getOrder")
     public String getOrder(HttpSession session, Model model) {
-
         User user = (User) session.getAttribute("user");
         int userId = user.getId();
         List<Order> orderList = orderService.getOrderListByUserId(userId);
@@ -68,6 +67,7 @@ public class OrderController {
         Map<Long, List<Goods>> orderGoodsMap = new HashMap<>();
         for (Order order : orderList) {
             List<Goods> goodsList = orderService.getGoodsByOrderCode(order.getOrderCode());
+            System.out.println("这个订单信息:"+goodsList);
             orderGoodsMap.put(order.getOrderCode(), goodsList);
         }
 

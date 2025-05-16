@@ -4,6 +4,7 @@ import com.work.work.entity.Goods;
 import com.work.work.entity.User;
 import com.work.work.service.GoodService;
 import com.work.work.service.ItemService;
+import com.work.work.service.OrderService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,8 @@ public class CarController {
     GoodService goodService;
     @Autowired
     ItemService itemService;
+    @Autowired
+    OrderService orderService;
 
     @GetMapping("/toCar")
     public String toCar(HttpSession session, Model model) {
@@ -98,7 +101,25 @@ public class CarController {
         User user = (User) session.getAttribute("user");
         int userId = user.getId();
         int number = goodService.getCountByDoubleId(userId,goodId);
+
         int stock = goodService.getCountById(goodId);
+
+
+        System.out.println("number:"+number);
+        System.out.println("stock:"+stock);
+        System.out.println("quantity:"+quantity);
+//        if(stock == 0){
+//            System.out.println("现在商品的数量:"+goodService.getCountById(goodId));
+//            int tempo = 1000-quantity;
+//            int plus = goodService.plusCount(goodId,tempo);
+//            System.out.println("现在商品的数量:"+goodService.getCountById(goodId));
+//            List<Goods> updatedGoods = itemService.getGoodsByUserId(userId);
+//            itemService.updateQuantity(userId,goodId,quantity);
+//            Map<String, Object> response = new HashMap<>();
+//            response.put("success", true);
+//            response.put("updatedGoods", updatedGoods);
+//            return response;
+//        }
         if(quantity>stock+number){
             List<Goods> updatedGoods = itemService.getGoodsByUserId(userId);
             Map<String, Object> response = new HashMap<>();
@@ -131,6 +152,20 @@ public class CarController {
         Long orderCode = Long.parseLong(requestData.get("orderCode").toString());
         int number = goodService.getCountByTripleId(userId,goodId,orderCode);
         int stock = goodService.getCountById(goodId);
+//        if(stock == 0){
+//            System.out.println("现在商品的数量:"+goodService.getCountById(goodId));
+//            int tempo = 1000-quantity;
+//            int plus = goodService.plusCount(goodId,tempo);
+//            System.out.println("现在商品的数量:"+goodService.getCountById(goodId));
+//
+//            List<Goods> updatedGoods = itemService.getGoodsByUserId(userId);
+//            itemService.updateQuantity(userId,goodId,quantity);
+//
+//            Map<String, Object> response = new HashMap<>();
+//            response.put("success", true);
+//            response.put("updatedGoods", updatedGoods);
+//            return response;
+//        }
         System.out.println("orderCode在这里:"+orderCode);
         if(quantity>stock+number){
             List<Goods> updatedGoods = itemService.getGoodsByUserId(userId);
@@ -141,7 +176,7 @@ public class CarController {
         }
         int changeNum = number - quantity;
         // 更新数据库中的商品数量
-        itemService.updateQuantity(userId, goodId, quantity);
+        itemService.updateQuantitys(userId, goodId,orderCode, quantity);
         int r=goodService.changeCount(goodId,changeNum);
         // 更新数据库中的商品数量
 

@@ -46,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean deleteOrderByCode(long orderCode, int userId) {
         System.out.println(orderCode+":"+userId);
-        return  orderMapper.deleteOrderByCodeAndUserId(orderCode,userId)==1&&orderMapper.deleteCarItemByCodeAndUserId(orderCode,userId)==1 ;
+        return  orderMapper.deleteOrderAndItems(orderCode,userId) > 0;
     }
     @Override
     public void updateOrder(long orderCode, int userId, List<Integer> goodsIds, List<Integer> quantities) {

@@ -44,10 +44,15 @@
         SET num = #{quantity}
         WHERE userid = #{userId} AND goodid = #{goodId}
     </update>
+    <update id="updateQuantitys">
+        UPDATE wn_caritem
+        SET num = #{quantity}
+        WHERE userid = #{userId} AND goodid = #{goodId} AND code = #{orderCode}
+    </update>
 
 
     <delete id="removeById">
 
-    DELETE FROM wn_caritem WHERE userid = #{userId} AND goodid = #{goodId}
+    DELETE FROM wn_caritem WHERE userid = #{userId} AND goodid = #{goodId} AND code IS NULL
     </delete>
 </mapper>
