@@ -90,10 +90,11 @@ public class CarController {
         int quantity = requestData.get("quantity");
         User user = (User) session.getAttribute("user");
         int userId = user.getId();
-
+        int number = goodService.getCountByDoubleId(userId,goodId);
+        int changeNum = number - quantity;
         // 更新数据库中的商品数量
         itemService.updateQuantity(userId, goodId, quantity);
-
+        int r=goodService.changeCount(goodId,changeNum);
         // 获取更新后的购物车商品列表
         List<Goods> updatedGoods = itemService.getGoodsByUserId(userId);
 
@@ -113,8 +114,13 @@ public class CarController {
         int quantity = Integer.parseInt(requestData.get("quantity").toString());
         Long orderCode = Long.parseLong(requestData.get("orderCode").toString());
         System.out.println("orderCode在这里:"+orderCode);
+        int number = goodService.getCountByTripleId(userId,goodId,orderCode);
+        int changeNum = number - quantity;
         // 更新数据库中的商品数量
         itemService.updateQuantity(userId, goodId, quantity);
+        int r=goodService.changeCount(goodId,changeNum);
+        // 更新数据库中的商品数量
+
 
         // 获取更新后的购物车商品列表
         List<Goods> updatedGoods = itemService.getGoodsByUserIdTwo(orderCode,userId);

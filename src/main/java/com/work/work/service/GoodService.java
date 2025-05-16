@@ -17,5 +17,5 @@ public interface GoodService {
     int minusCount(int goodid,int num);
     int getCountByDoubleId(int userId ,int goodId);
     int getCountByTripleId(int userId ,int goodId,long orderCode);
-
+    int changeCount(int goodid,int num);
 }

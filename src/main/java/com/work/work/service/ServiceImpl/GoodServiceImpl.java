@@ -59,5 +59,10 @@ public class GoodServiceImpl implements GoodService {
         return goodMapper.getCountByTripleId(userId,goodId,orderCode);
     }
 
+    @Override
+    public int changeCount(int goodid, int num) {
+        return goodMapper.changeCount(goodid,num);
+    }
+
 
 }

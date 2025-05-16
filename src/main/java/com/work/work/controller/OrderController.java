@@ -90,7 +90,11 @@ public class OrderController {
         System.out.println("数字列表:"+kk);
         for(Integer i : kk ){
             int temp =orderService.getCodeNum(userId,i,orderCode);
+            System.out.println("数量:"+temp);
+            System.out.println("当前商品id:"+i+",当前数量为:"+goodService.getCountById(i));
             int z= goodService.plusCount(i,temp);
+            System.out.println("当前商品id:"+i+",当前数量为:"+goodService.getCountById(i));
+
         }
         boolean res = orderService.deleteOrderByCode(orderCode, userId);
         if (res) {

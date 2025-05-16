@@ -27,6 +27,12 @@
     <update id="minusCount">
         UPDATE goods SET stock = stock - #{num} WHERE id = #{goodid}
     </update>
+    <update id="changeCount">
+        UPDATE goods
+        SET stock = stock + #{num}
+        WHERE id = #{goodid}
+          AND stock - #{num} >= 0;
+        </update>
 
     <select id="getCountByDoubleId">
         SELECT num FROM wn_caritem WHERE userid  = #{userId} AND goodid= #{goodId} AND code IS NULL
