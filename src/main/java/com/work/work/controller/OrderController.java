@@ -86,6 +86,12 @@ public class OrderController {
         System.out.println("删除中");
         User user = (User) session.getAttribute("user");
         int userId = user.getId();
+        List<Integer> kk  = orderService.getGoodIdByCode(orderCode);
+        System.out.println("数字列表:"+kk);
+        for(Integer i : kk ){
+            int temp =orderService.getCodeNum(userId,i,orderCode);
+            int z= goodService.plusCount(i,temp);
+        }
         boolean res = orderService.deleteOrderByCode(orderCode, userId);
         if (res) {
             List<Order> orderList = orderService.getOrderListByUserId(userId);
@@ -120,6 +126,7 @@ public class OrderController {
                               @RequestParam("goodsId") List<Integer> goodsIds,
                               @RequestParam("nums") List<Integer> nums,
                               HttpSession session,Model model) {
+
         System.out.println("商品数量:"+nums);
         User user = (User) session.getAttribute("user");
         int userId = user.getId();

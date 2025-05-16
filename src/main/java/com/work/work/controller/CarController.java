@@ -2,6 +2,7 @@ package com.work.work.controller;
 
 import com.work.work.entity.Goods;
 import com.work.work.entity.User;
+import com.work.work.service.GoodService;
 import com.work.work.service.ItemService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import java.util.Map;
 @RequestMapping("/car")
 public class CarController {
     @Autowired
+    GoodService goodService;
+    @Autowired
     ItemService itemService;
 
     @GetMapping("/toCar")
@@ -29,23 +32,32 @@ public class CarController {
     }
 
     @PostMapping("/add")
-    public String add(@RequestParam("goodId") int goodid, @RequestParam("quantity") int num,  HttpSession session,Model model) {
-
-            User user = (User) session.getAttribute("user");
+    public String add(@RequestParam("goodId") int goodId, @RequestParam("quantity") int num,  HttpSession session,Model model) {
+        String  msg = null;
+        User user = (User) session.getAttribute("user");
+             int count = goodService.getCountById(goodId);
+             if(count < num){
+                 System.out.println("库存不足，无法出货！");
+                 model.addAttribute("msg","库存不足，无法出货");
+                 Goods good = goodService.getGoodById(goodId);
+                 model.addAttribute("good", good);
+                 return "single_info";
+             }
             if(user ==null)
             {
                 return "login";
             }
 
             int userid = user.getId();
-            boolean isEmpty = this.isSingle(userid,goodid);
+            boolean isEmpty = this.isSingle(userid,goodId);
             if(isEmpty==true) {
-                int res = itemService.addGoodItem(userid, goodid, num);
+                int res = itemService.addGoodItem(userid, goodId, num);
                 if (res == 1) {
                     System.out.println("添加成功");
                     List<Goods> goods = itemService.getGoodsByUserId(user.getId());
                     System.out.println("拿到的商品信息:"+goods);
                     model.addAttribute("goods", goods);
+                    int mark =goodService.minusCount(goodId,num);
                     return "car";
                 } else {
                     System.out.println("添加失败");
@@ -53,16 +65,18 @@ public class CarController {
                 }
             }
             else{
-                    itemService.addNum(userid,goodid,num);
+                    itemService.addNum(userid,goodId,num);
                 List<Goods> goods = itemService.getGoodsByUserId(user.getId());
                 model.addAttribute("goods", goods);
+
+                int mark =goodService.minusCount(goodId,num);
                 return "car";
             }
 
         }
 
-        public boolean isSingle(int userid,int goodid) {
-                List<Goods> goods = itemService.isSingle(userid,goodid);
+        public boolean isSingle(int userid,int goodId) {
+                List<Goods> goods = itemService.isSingle(userid,goodId);
                 if (goods.size()>0) {
                     return false;
                 }
@@ -95,10 +109,8 @@ public class CarController {
 
         User user = (User) session.getAttribute("user");
         int userId = user.getId();
-        // goodId 可能是字符串，先转成字符串，再转成int
         int goodId = Integer.parseInt(requestData.get("goodId").toString());
         int quantity = Integer.parseInt(requestData.get("quantity").toString());
-        // orderCode 是长整型字符串，转成Long
         Long orderCode = Long.parseLong(requestData.get("orderCode").toString());
         System.out.println("orderCode在这里:"+orderCode);
         // 更新数据库中的商品数量
@@ -117,10 +129,15 @@ public class CarController {
     public String remove(@PathVariable("goodId") int goodId, HttpSession session,Model model) {
         User user = (User) session.getAttribute("user");
         int userId = user.getId();
+        System.out.println("用户id:"+userId);
+        System.out.println("商品id："+goodId);
+        int mark = goodService.getCountByDoubleId(userId,goodId);
+        System.out.println("mark:"+mark);
         int Success = itemService.removeById(userId,goodId);
         if(Success==1) {
             System.out.println("删除成功");
             List<Goods> goods = itemService.getGoodsByUserId(userId);
+            int res = goodService.plusCount(goodId,mark);
             model.addAttribute("goods", goods);
             return "car";
         }

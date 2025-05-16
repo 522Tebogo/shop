@@ -10,7 +10,6 @@ import java.util.List;
 public interface OrderMapper {
     int insertOrder(Order order);
     int insertCode(long orderCode,int userId);
-
     List<Order> getOrderListByUserId(int userId);
     List<Goods> getGoodsByOrderCode(long orderCode);
     Order getOrderByOrderCode(long orderCode);
@@ -18,4 +17,6 @@ public interface OrderMapper {
     int deleteOrderByCodeAndUserId(long orderCode,int userId);
     int updateCarItemQuantity(int userId,int goodId,long orderCode,int quantity);
     int updateOrderTotalPrice(long orderCode,double totalPrice);
+    List<Integer> getGoodIdByCode(long orderCode);
+    int getCodeNum(int userid ,int goodid, long orderCode);
 }

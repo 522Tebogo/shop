@@ -15,5 +15,8 @@ public interface OrderService {
     Order getOrderByOrderCode(long orderCode);
     boolean deleteOrderByCode(long orderCode,int userId);
     void updateOrder(long orderCode, int userId, List<Integer> goodsIds, List<Integer> quantities);
+    List<Integer> getGoodIdByCode(long orderCode);
+    int getCodeNum(int userid ,int goodid, long orderCode);
+
 
 }

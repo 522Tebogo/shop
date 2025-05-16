@@ -37,6 +37,7 @@
     <delete id="deleteOrderByCodeAndUserId">
         DELETE FROM orders WHERE order_code = #{orderCode} AND userid = #{userId}
     </delete>
+
     <update id="updateCarItemQuantity">
         UPDATE wn_caritem
         SET num = #{quantity}
@@ -49,4 +50,10 @@
         WHERE order_code = #{orderCode}
     </update>
 
+    <select id="getGoodIdByCode">
+        SELECT goodid FROM wn_caritem WHERE code = #{orderCode}
+    </select>
+<select id="getCodeNum">
+    SELECT num FROM wn_caritem WHERE userid = #{userid} AND goodid = #{goodid} AND code  = #{orderCode}
+</select>
 </mapper>

@@ -18,6 +18,21 @@
     <select id="getGoodsByCategory" resultType="com.work.work.entity.Goods">
         SELECT * FROM Goods WHERE category = #{category}
     </select>
+    <select id="getCountById">
+        SELECT stock FROM goods WHERE id = #{goodid}
+    </select>
+    <update id="plusCount">
+        UPDATE goods SET stock = stock+ #{num} WHERE id = #{goodid}
+    </update>
+    <update id="minusCount">
+        UPDATE goods SET stock = stock - #{num} WHERE id = #{goodid}
+    </update>
 
+    <select id="getCountByDoubleId">
+        SELECT num FROM wn_caritem WHERE userid  = #{userId} AND goodid= #{goodId} AND code IS NULL
+    </select>
+    <select id="getCountByTripleId">
+        SELECT num FROM wn_caritem WHERE userid  = #{userId} AND goodid= #{goodId} AND code = #{orderCode}
+    </select>
 
 </mapper>

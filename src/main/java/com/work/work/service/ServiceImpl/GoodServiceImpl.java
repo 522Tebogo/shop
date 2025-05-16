@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class GoodServiceImpl implements GoodService {
@@ -29,6 +30,33 @@ public class GoodServiceImpl implements GoodService {
     @Override
     public List<Goods> getGoodsByCategory(String category) {
         return goodMapper.getGoodsByCategory(category);
+    }
+
+    @Override
+    public int getCountById(int goodid) {
+        return goodMapper.getCountById(goodid);
+    }
+
+    @Override
+    public int plusCount(int goodid, int num) {
+        return goodMapper.plusCount(goodid, num);
+    }
+
+    @Override
+    public int minusCount(int goodid, int num) {
+        return goodMapper.minusCount(goodid, num);
+    }
+
+    @Override
+    public int getCountByDoubleId(int userId, int goodId) {
+        return goodMapper.getCountByDoubleId(userId,goodId);
+    }
+
+
+
+    @Override
+    public int getCountByTripleId(int userId, int goodId, long orderCode) {
+        return goodMapper.getCountByTripleId(userId,goodId,orderCode);
     }
 
 

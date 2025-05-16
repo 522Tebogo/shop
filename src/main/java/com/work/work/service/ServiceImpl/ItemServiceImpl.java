@@ -53,9 +53,5 @@ public class ItemServiceImpl implements ItemService {
         return itemMapper.getGoodsByUserIdTwo(orderCode,userId);
     }
 
-    @Override
-    public Object getItemByCod(long orderCode) {
-        return itemMapper.getItemByCod(orderCode);
-    }
 
 }

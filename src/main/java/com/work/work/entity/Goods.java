@@ -12,6 +12,6 @@ public class Goods {
     private String description;
     private String category;
     private int num;
-
+    private  int stock;
 }
 

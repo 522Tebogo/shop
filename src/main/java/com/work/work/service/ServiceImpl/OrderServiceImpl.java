@@ -45,7 +45,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean deleteOrderByCode(long orderCode, int userId) {
-        return orderMapper.deleteCarItemByCodeAndUserId(orderCode,userId)==1 && orderMapper.deleteOrderByCodeAndUserId(orderCode,userId)==1;
+        System.out.println(orderCode+":"+userId);
+        return  orderMapper.deleteOrderByCodeAndUserId(orderCode,userId)==1&&orderMapper.deleteCarItemByCodeAndUserId(orderCode,userId)==1 ;
     }
     @Override
     public void updateOrder(long orderCode, int userId, List<Integer> goodsIds, List<Integer> quantities) {
@@ -66,6 +67,16 @@ public class OrderServiceImpl implements OrderService {
 
         // 更新订单总价
         orderMapper.updateOrderTotalPrice(orderCode, totalPrice);
+    }
+
+    @Override
+    public List<Integer> getGoodIdByCode(long orderCode) {
+        return orderMapper.getGoodIdByCode(orderCode);
+    }
+
+    @Override
+    public int getCodeNum(int userid, int goodid, long orderCode) {
+        return orderMapper.getCodeNum(userid,goodid,orderCode);
     }
 
 

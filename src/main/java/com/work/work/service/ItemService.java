@@ -17,7 +17,6 @@ public interface ItemService {
     void updateQuantity(int userId, int goodId, int quantity);
     int removeById(int userId, int goodId);
     List<Goods> getGoodsByUserIdTwo(long orderCode,int userId);
-    Object getItemByCod(long orderCode);
 
 
 }

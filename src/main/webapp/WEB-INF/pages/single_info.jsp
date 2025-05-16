@@ -144,6 +144,16 @@
     </div>
 </nav>
 
+<c:if test="${not empty msg}">
+    <div class="container mt-4">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+                ${msg}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+</c:if>
+
 <section class="product-details py-5">
     <div class="container">
         <div class="row g-5 align-items-start">
