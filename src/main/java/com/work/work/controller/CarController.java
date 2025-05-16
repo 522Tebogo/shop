@@ -91,6 +91,15 @@ public class CarController {
         User user = (User) session.getAttribute("user");
         int userId = user.getId();
         int number = goodService.getCountByDoubleId(userId,goodId);
+        int stock = goodService.getCountById(goodId);
+        if(quantity>stock+number){
+            List<Goods> updatedGoods = itemService.getGoodsByUserId(userId);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("updatedGoods", updatedGoods);
+            return response;
+        }
+
         int changeNum = number - quantity;
         // 更新数据库中的商品数量
         itemService.updateQuantity(userId, goodId, quantity);
@@ -113,8 +122,16 @@ public class CarController {
         int goodId = Integer.parseInt(requestData.get("goodId").toString());
         int quantity = Integer.parseInt(requestData.get("quantity").toString());
         Long orderCode = Long.parseLong(requestData.get("orderCode").toString());
-        System.out.println("orderCode在这里:"+orderCode);
         int number = goodService.getCountByTripleId(userId,goodId,orderCode);
+        int stock = goodService.getCountById(goodId);
+        System.out.println("orderCode在这里:"+orderCode);
+        if(quantity>stock+number){
+            List<Goods> updatedGoods = itemService.getGoodsByUserId(userId);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("updatedGoods", updatedGoods);
+            return response;
+        }
         int changeNum = number - quantity;
         // 更新数据库中的商品数量
         itemService.updateQuantity(userId, goodId, quantity);

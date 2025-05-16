@@ -156,7 +156,15 @@
 
 <div class="container mt-5">
     <h2 class="section-title">我的购物车</h2>
-
+    <c:if test="${not empty msg}">
+        <div class="container mt-4">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                    ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </c:if>
     <c:if test="${empty goods}">
         <div class="alert alert-info" role="alert">
             您的购物车空空如也，快去<a href="/" class="alert-link">首页</a>看看吧！
@@ -212,7 +220,10 @@
                 <h5 class="text-danger fw-bold">¥<span id="final-total"><fmt:formatNumber value="${finalTotal}" type="number" maxFractionDigits="2" minFractionDigits="2"/></span></h5>
             </div>
             <div class="text-end mt-3">
-                <a href="/order/toOrder"><button class="btn btn-primary"><i class="bi bi-credit-card"></i> 去结算</button></a>
+                <form id="checkoutForm" method="GET" action="/order/toOrder">
+                <div id="goodIdInputs"></div>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-credit-card"></i> 去结算</button>
+                </form>
             </div>
         </div>
     </c:if>
@@ -288,7 +299,7 @@
                         // 更新页面上的总价等信息
                         updateCartData(data.updatedGoods);
                     } else {
-                        alert('更新失败！');
+                        alert('库存不足！');
                     }
                 })
                 .catch(error => {
@@ -296,6 +307,7 @@
                 });
         });
     });
+
 
     // 更新购物车总价等数据
     function updateCartData(goods) {

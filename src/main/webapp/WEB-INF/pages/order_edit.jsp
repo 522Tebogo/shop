@@ -44,7 +44,15 @@
 <div class="container mt-5">
     <h2 class="section-title" style="text-align: center">编辑订单 - 订单号: ${orderCode}</h2>
 
-
+    <c:if test="${not empty msg}">
+        <div class="container mt-4">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                    ${msg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </c:if>
     <c:if test="${empty goods}">
         <div class="alert alert-info text-center">
             您的购物车为空，<a href="/" class="alert-link">去首页看看</a>吧！
@@ -136,7 +144,7 @@
                     if (data.success) {
                         updateCartSummary(data.updatedGoods);
                     } else {
-                        alert("更新失败，请稍后再试。");
+                        alert("库存不足！");
                     }
                 })
                 .catch(err => {
