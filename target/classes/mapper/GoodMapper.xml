@@ -41,4 +41,8 @@
         SELECT num FROM wn_caritem WHERE userid  = #{userId} AND goodid= #{goodId} AND code = #{orderCode}
     </select>
 
+    <select id="getOutByGoodId">
+        SELECT is_out FROM goods WHERE id = #{goodid}
+    </select>
+
 </mapper>
