@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.work.work.mapper.InvoiceMapper">
+
+    <!-- 基本结果映射 -->
+    <resultMap id="BaseResultMap" type="com.work.work.entity.Invoice">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="invoice_number" property="invoiceNumber" jdbcType="BIGINT"/>
+        <result column="order_code" property="orderCode" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="tax_number" property="taxNumber" jdbcType="VARCHAR"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!-- 根据用户ID获取发票列表 -->
+    <select id="getInvoiceListByUserId" resultMap="BaseResultMap">
+        SELECT * FROM invoice
+        WHERE user_id = #{userId}
+        AND status != 2  <!-- 排除已删除的 -->
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 创建发票 -->
+    <insert id="insertInvoice" parameterType="com.work.work.entity.Invoice"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO invoice (
+            invoice_number, order_code, user_id,
+            title, tax_number, amount, status
+        ) VALUES (
+                     #{invoiceNumber}, #{orderCode}, #{userId},
+                     #{title}, #{taxNumber}, #{amount}, #{status}
+                 )
+    </insert>
+
+    <!-- 根据条件查询发票 -->
+    <select id="searchInvoices" resultMap="BaseResultMap">
+        SELECT * FROM invoice
+        WHERE status != 2
+        <if test="invoiceNumber != null">
+            AND invoice_number = #{invoiceNumber}
+        </if>
+        <if test="orderCode != null">
+            AND order_code = #{orderCode}
+        </if>
+        <if test="userId != null">
+            AND user_id = #{userId}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据ID获取发票 -->
+    <select id="getInvoiceById" resultMap="BaseResultMap">
+        SELECT * FROM invoice WHERE id = #{id}
+    </select>
+
+    <!-- 更新发票信息 -->
+    <update id="updateInvoice" parameterType="com.work.work.entity.Invoice">
+        UPDATE invoice SET
+        title = #{title},
+        tax_number = #{taxNumber},
+        update_time = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+        AND status = 0  <!-- 只能更新未开具的发票 -->
+    </update>
+
+    <!-- 更新发票状态 -->
+    <update id="updateInvoiceStatus">
+        UPDATE invoice SET
+                           status = #{status},
+                           update_time = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -5,8 +5,8 @@
 <!--一定要写对-->
 <mapper namespace="com.work.work.mapper.OrderMapper">
     <insert id="insertOrder" parameterType="com.work.work.entity.Order">
-        INSERT INTO orders (userid, order_code, totalPrice, create_time)
-        VALUES (#{userId}, #{orderCode}, #{totalPrice}, NOW())
+        INSERT INTO orders (userid, order_code, totalPrice, create_time, address_id, receiver, phone, address)
+        VALUES (#{userId}, #{orderCode}, #{totalPrice}, NOW(), #{addressId}, #{receiver}, #{phone}, #{address})
     </insert>
 
     <update id="insertCode">
@@ -57,6 +57,11 @@
     SELECT num FROM wn_caritem WHERE userid = #{userid} AND goodid = #{goodid} AND code  = #{orderCode}
 </select>
 
+<update id="updateOrderAddress">
+    UPDATE orders
+    SET address_id = #{addressId}, receiver = #{receiver}, phone = #{phone}, address = #{address}
+    WHERE order_code = #{orderCode}
+</update>
     <select id="getPriceByCode">
         SELECT totalPrice FROM orders WHERE order_code = #{orderCode}
     </select>

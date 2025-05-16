@@ -186,8 +186,9 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     $(document).ready(function() {
-        let countdown = 0;
-        let timer;
+        // 定义全局变量
+        var countdownTimer = null;
+        var countdownNum = 60;
 
         // 发送验证码按钮点击事件
         $('#sendCodeBtn').click(function() {
@@ -199,8 +200,30 @@
                 return;
             }
 
-            // 禁用按钮，开始倒计时
-            startCountdown();
+            // 立即禁用按钮
+            const btn = $(this);
+            btn.prop('disabled', true);
+            
+            // 开始倒计时
+            countdownNum = 60;
+            btn.text('重新发送(' + countdownNum + 's)');
+            
+            // 清除可能存在的旧计时器
+            if(countdownTimer) {
+                clearInterval(countdownTimer);
+            }
+            
+            // 设置新的计时器
+            countdownTimer = setInterval(function() {
+                countdownNum--;
+                btn.text('重新发送(' + countdownNum + 's)');
+                
+                if(countdownNum <= 0) {
+                    clearInterval(countdownTimer);
+                    btn.prop('disabled', false);
+                    btn.text('获取验证码');
+                }
+            }, 1000);
 
             // 发送验证码请求
             $.ajax({
@@ -212,12 +235,18 @@
                         alert('验证码已发送，请查看控制台输出');
                     } else {
                         alert("验证码未发送");
-                        stopCountdown();
+                        // 如果发送失败，停止倒计时，恢复按钮
+                        clearInterval(countdownTimer);
+                        btn.prop('disabled', false);
+                        btn.text('获取验证码');
                     }
                 },
                 error: function() {
                     alert('发送验证码失败，请稍后再试');
-                    stopCountdown();
+                    // 如果发送失败，停止倒计时，恢复按钮
+                    clearInterval(countdownTimer);
+                    btn.prop('disabled', false);
+                    btn.text('获取验证码');
                 }
             });
         });
@@ -227,31 +256,6 @@
             const href = $(this).attr('href');
             window.location.href = href;
         });
-
-        // 开始倒计时
-        function startCountdown() {
-            const btn = $('#sendCodeBtn');
-            countdown = 60;
-            btn.prop('disabled', true);
-            btn.text(`重新发送(${countdown}s)`);
-
-            timer = setInterval(function() {
-                countdown--;
-                btn.text(`重新发送(${countdown}s)`);
-
-                if(countdown <= 0) {
-                    stopCountdown();
-                }
-            }, 1000);
-        }
-
-        // 停止倒计时
-        function stopCountdown() {
-            const btn = $('#sendCodeBtn');
-            clearInterval(timer);
-            btn.prop('disabled', false);
-            btn.text('获取验证码');
-        }
     });
 </script>
 </body>

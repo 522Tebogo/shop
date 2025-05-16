@@ -1,3 +1,23 @@
+create table address
+(
+    id             int auto_increment
+        primary key,
+    user_id        int                  not null comment '用户ID',
+    receiver       varchar(50)          not null comment '收件人姓名',
+    phone          varchar(20)          not null comment '收件人手机号',
+    province       varchar(50)          not null comment '省份',
+    city           varchar(50)          not null comment '城市',
+    district       varchar(50)          not null comment '区/县',
+    detail_address varchar(255)         not null comment '详细地址',
+    is_default     tinyint(1) default 0 not null comment '是否为默认地址',
+    create_time    datetime             not null comment '创建时间',
+    update_time    datetime             not null comment '更新时间'
+)
+    comment '用户收货地址表';
+
+create index idx_user_id
+    on address (user_id);
+
 create table goods
 (
     id            int auto_increment
@@ -16,10 +36,15 @@ create table orders
 (
     id          int auto_increment
         primary key,
-    userid      int      not null,
-    order_code  bigint   not null,
-    totalPrice  int      not null,
-    create_time datetime not null
+    userid      int           not null,
+    order_code  bigint        not null,
+    totalPrice  int           not null,
+    create_time datetime      not null,
+    address_id  int           null comment '收货地址ID',
+    receiver    varchar(50)   null comment '收件人姓名',
+    phone       varchar(20)   null comment '收件人电话',
+    address     varchar(255)  null comment '完整地址',
+    payed       int default 0 not null
 );
 
 create table wn_caritem
@@ -51,6 +76,26 @@ create table wn_user
     constraint uk_account
         unique (account)
 );
+
+create table invoice
+(
+    id             int auto_increment
+        primary key,
+    user_id        int            not null,
+    invoice_number bigint         not null,
+    order_code     bigint         not null,
+    title          varchar(100)   not null,
+    tax_number     varchar(50)    null,
+    amount         decimal(10, 2) not null,
+    status         int default 0  null,
+    create_time    datetime       null,
+    update_time    datetime       null,
+    constraint invoice_ibfk_1
+        foreign key (user_id) references wn_user (id)
+);
+
+create index user_id
+    on invoice (user_id);
 
 create table wn_verification_code
 (

@@ -137,10 +137,10 @@
                         我的账户
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> 个人中心</a></li>
-                        <li><a class="dropdown-item active" href=""><i class="bi bi-cart"></i> 购物车</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-basket"></i> 我的订单</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> 账户设置</a></li>
+                        <li><a class="dropdown-item" href="/user/profile"><i class="bi bi-person"></i> 个人中心</a></li>
+                        <li><a class="dropdown-item active" href="/car/toCar"><i class="bi bi-cart"></i> 购物车</a></li>
+                        <li><a class="dropdown-item" href="/order/getOrder"><i class="bi bi-basket"></i> 我的订单</a></li>
+                        <li><a class="dropdown-item" href="/address/list"><i class="bi bi-geo-alt"></i> 收货地址</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/user/logout"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
                     </ul>
@@ -156,6 +156,14 @@
 
 <div class="container mt-5">
     <h2 class="section-title">我的购物车</h2>
+    
+    <!-- 添加返回按钮 -->
+    <div class="d-flex justify-content-end mb-4">
+        <a href="/" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> 返回首页
+        </a>
+    </div>
+    
     <c:if test="${not empty msg}">
         <div class="container mt-4">
             <div class="alert alert-danger alert-dismissible fade show" role="alert">

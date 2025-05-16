@@ -1,4 +1,4 @@
-package com.work.work.config;
+package com.work.work.config.interceptor;
 
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;

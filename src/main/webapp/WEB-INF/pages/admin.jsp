@@ -13,13 +13,13 @@
 <div class="container">
     <div id="header">
         <%--header--%>
-            <div class="logo">
-                <a href=""><img src="images/admin/logo.png" width="303" height="43" /></a>
-            </div>
-            <p>
-                <a href="/admin/logout">退出管理</a> <a href="/admin">后台首页</a> <a href="/" target='_blank'>商城首页</a>
-                <span>您好 <label class='bold'>${sessionScope.manager.account}</label></span>
-            </p>
+        <div class="logo">
+            <a href=""><img src="images/admin/logo.png" width="303" height="43" /></a>
+        </div>
+        <p>
+            <a href="/admin/logout">退出管理</a> <a href="/admin">后台首页</a> <a href="/" target='_blank'>商城首页</a>
+            <span>您好 <label class='bold'>${sessionScope.manager.account}</label></span>
+        </p>
     </div>
     <div id="admin_left">
         <ul class="submenu">

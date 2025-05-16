@@ -15,7 +15,6 @@ public class AdminController {
         if (user == null) {
             return "login";
         }
-
         model.addAttribute("user", user);
         return "admin";
     }

@@ -69,10 +69,8 @@
             border-radius: 4px;
         }
         .welcome-message {
-
             margin-bottom: 0;
             margin-right: 20px;
-
         }
         .order-item-details {
             flex-grow: 1;
@@ -83,6 +81,65 @@
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             margin-bottom: 20px;
+        }
+        .address-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .address-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .address-card:hover {
+            border-color: #5d6bdf;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .address-card.selected {
+            border: 2px solid #5d6bdf;
+            background-color: #f9f9ff;
+        }
+        .default-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #5d6bdf;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .no-address-alert {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8d7da;
+            color: #721c24;
+            margin-bottom: 15px;
+        }
+        .add-address-card {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .add-address-card:hover {
+            border-color: #5d6bdf;
+            background-color: #f8f9ff;
+        }
+        .add-address-icon {
+            font-size: 2rem;
+            color: #5d6bdf;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -127,10 +184,10 @@
                         我的账户
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> 个人中心</a></li>
-                        <li><a class="dropdown-item active" href=""><i class="bi bi-cart"></i> 购物车</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-basket"></i> 我的订单</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear"></i> 账户设置</a></li>
+                        <li><a class="dropdown-item" href="/user/profile"><i class="bi bi-person"></i> 个人中心</a></li>
+                        <li><a class="dropdown-item" href="/car/toCar"><i class="bi bi-cart"></i> 购物车</a></li>
+                        <li><a class="dropdown-item" href="/order/getOrder"><i class="bi bi-basket"></i> 我的订单</a></li>
+                        <li><a class="dropdown-item" href="/address/list"><i class="bi bi-geo-alt"></i> 收货地址</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/user/logout"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
                     </ul>
@@ -146,89 +203,194 @@
 
 <div class="container mt-5">
     <h2 class="section-title">订单确认</h2>
-    <div class="order-total">
-        <h4>订单信息</h4>
-        <hr>
-        <div class="d-flex justify-content-between">
-            <p>订单编号:</p>
-            <p class="fw-bold" id="order-id">${orderId}</p>
+    
+    <!-- 显示错误消息 -->
+    <c:if test="${not empty errorMsg}">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> ${errorMsg}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div class="d-flex justify-content-between">
-            <p>下单时间:</p>
-            <p class="fw-bold" id="current-time">${currentTime}</p>
-        </div>
+    </c:if>
+    
+    <!-- 收货地址 -->
+    <div class="address-section">
+        <h4><i class="bi bi-geo-alt-fill"></i> 收货地址</h4>
         <hr>
-        <h5>订单详情</h5>
-        <c:set var="totalPrice" value="0" />
+        
+        <c:choose>
+            <c:when test="${empty addresses}">
+                <div class="no-address-alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> 您还没有添加收货地址，请点击下方按钮添加
+                </div>
+                <a href="/address/add" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> 添加收货地址
+                </a>
+            </c:when>
+            <c:otherwise>
+                <div class="row">
+                    <c:forEach var="address" items="${addresses}">
+                        <div class="col-md-6">
+                            <div class="address-card ${address.isDefault ? 'selected' : ''}" data-address-id="${address.id}">
+                                <c:if test="${address.isDefault}">
+                                    <span class="default-badge">默认地址</span>
+                                </c:if>
+                                
+                                <h5><i class="bi bi-person-fill"></i> ${address.receiver}</h5>
+                                <p class="mb-1"><i class="bi bi-telephone-fill"></i> ${address.phone}</p>
+                                <p><i class="bi bi-geo-alt-fill"></i> ${address.province} ${address.city} ${address.district} ${address.detailAddress}</p>
+                            </div>
+                        </div>
+                    </c:forEach>
+                    
+                    <div class="col-md-6">
+                        <a href="/address/add" class="text-decoration-none">
+                            <div class="add-address-card">
+                                <div class="add-address-icon">
+                                    <i class="bi bi-plus-circle"></i>
+                                </div>
+                                <h5>添加新地址</h5>
+                                <p class="text-muted">添加一个新的收货地址</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </c:otherwise>
+        </c:choose>
+    </div>
+    
+    <!-- 订单商品列表 -->
+    <div class="order-items">
+        <h4><i class="bi bi-basket-fill"></i> 商品清单</h4>
+        <hr>
+        
         <c:forEach var="item" items="${goods}">
-            <c:set var="itemTotal" value="${item.surprisePrice * item.num}" />
-            <c:set var="totalPrice" value="${totalPrice + itemTotal}" />
-        </c:forEach>
-
-        <c:set var="shippingFee" value="${totalPrice * 0.02}" />
-        <c:set var="finalTotal" value="${totalPrice + shippingFee}" />
-        <c:forEach var="item" items="${goods}">
-
-
             <div class="order-item">
                 <img src="${item.imageUrl}" alt="${item.name}">
                 <div class="order-item-details">
                     <h5>${item.name}</h5>
                     <p class="text-muted">规格: ${item.description}</p>
-                    <p class="text-danger fw-bold">¥<fmt:formatNumber value="${item.surprisePrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
-                    <p class="text-muted">数量: ${item.num}</p>
-                    <p class="text-muted">小计: ¥<fmt:formatNumber value="${item.surprisePrice * item.num}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
+                    <p class="text-danger fw-bold">¥<fmt:formatNumber value="${item.surprisePrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/> x ${item.num}</p>
+                </div>
+                <div class="order-item-subtotal">
+                    <p class="fw-bold">小计: ¥<fmt:formatNumber value="${item.surprisePrice * item.num}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
                 </div>
             </div>
         </c:forEach>
+    </div>
+    
+    <!-- 订单总计 -->
+    <c:set var="totalPrice" value="0" />
+    <c:forEach var="item" items="${goods}">
+        <c:set var="itemTotal" value="${item.surprisePrice * item.num}" />
+        <c:set var="totalPrice" value="${totalPrice + itemTotal}" />
+    </c:forEach>
+    <c:set var="shippingFee" value="${totalPrice * 0.02}" />
+    <c:set var="finalTotal" value="${totalPrice + shippingFee}" />
+    
+    <div class="order-total">
+        <h4>订单总计</h4>
         <hr>
         <div class="d-flex justify-content-between">
-            <p>购物车商品价格总和:</p>
-            <p class="fw-bold" id="total-price">¥<fmt:formatNumber value="${totalPrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
+            <p>商品金额:</p>
+            <p>¥<fmt:formatNumber value="${totalPrice}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
         </div>
         <div class="d-flex justify-content-between">
-            <p>运费 (5%):</p>
-            <p class="fw-bold" id="shipping-fee">¥<fmt:formatNumber value="${shippingFee}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
+            <p>运费 (2%):</p>
+            <p>¥<fmt:formatNumber value="${shippingFee}" type="number" maxFractionDigits="2" minFractionDigits="2"/></p>
         </div>
         <hr>
         <div class="d-flex justify-content-between">
             <h5>应付总额:</h5>
-            <h5 class="text-danger fw-bold">¥<span id="final-total"><fmt:formatNumber value="${finalTotal}" type="number" maxFractionDigits="2" minFractionDigits="2"/></span></h5>
+            <h5 class="text-danger fw-bold">¥<fmt:formatNumber value="${finalTotal}" type="number" maxFractionDigits="2" minFractionDigits="2"/></h5>
         </div>
-        <div class="text-end mt-3">
-            <form action="/order/submit" method="POST">
-                <input type="hidden" name="userId" value="${user.id}"/>
-                <input type="hidden" name="totalPrice" value="${finalTotal}"/>
-                <input type="hidden" name="orderCode" value="${orderId}"/>
-                <button type="submit" class="btn btn-primary"><i class="bi bi-credit-card"></i> 确认订单</button>
-            </form>
-        </div>
+        
+        <form action="/order/submit" method="post" id="orderForm">
+            <input type="hidden" name="userId" value="${user.id}">
+            <input type="hidden" name="totalPrice" value="${finalTotal}">
+            <input type="hidden" name="orderCode" value="${System.currentTimeMillis()}">
+            <input type="hidden" name="addressId" id="selectedAddressId" value="${defaultAddress.id}">
+            
+            <div class="text-end mt-3">
+                <a href="/car/toCar" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> 返回购物车
+                </a>
+                <button type="submit" class="btn btn-primary" id="submitOrderBtn" ${empty addresses ? 'disabled' : ''}>
+                    <i class="bi bi-credit-card"></i> 提交订单
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <footer class="footer mt-5">
     <div class="container">
-        <!-- Footer content here -->
+        <div class="row">
+            <div class="col-md-3">
+                <h5>关于我们</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">公司简介</a></li>
+                    <li><a href="#">企业文化</a></li>
+                    <li><a href="#">发展历程</a></li>
+                    <li><a href="#">联系我们</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>帮助中心</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">购物指南</a></li>
+                    <li><a href="#">支付方式</a></li>
+                    <li><a href="#">配送方式</a></li>
+                    <li><a href="#">售后服务</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>商家服务</h5>
+                <ul class="list-unstyled">
+                    <li><a href="#">商家入驻</a></li>
+                    <li><a href="#">商家中心</a></li>
+                    <li><a href="#">营销服务</a></li>
+                    <li><a href="#">物流服务</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>关注我们</h5>
+                <p>
+                    <i class="bi bi-wechat me-2"></i> 官方微信<br>
+                    <i class="bi bi-phone me-2"></i> 客服热线: 400-123-4567<br>
+                    <i class="bi bi-envelope me-2"></i> 客服邮箱: service@example.com
+                </p>
+            </div>
+        </div>
+        <hr class="my-4 bg-secondary">
+        <div class="text-center">
+            <p>© 2024 嗨购商城. 保留所有权利.</p>
+        </div>
     </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    // 模拟生成订单编号（格式：YYYYMMDDHHMMSS）
-    const currentDate = new Date();
-    const orderId = currentDate.getFullYear() + ('0' + (currentDate.getMonth() + 1)).slice(-2) + ('0' + currentDate.getDate()).slice(-2) +
-        ('0' + currentDate.getHours()).slice(-2) + ('0' + currentDate.getMinutes()).slice(-2) +
-        ('0' + currentDate.getSeconds()).slice(-2);
-    document.getElementById('order-id').textContent = orderId;
-
-    // 在隐藏的表单字段中设置订单号
-    document.getElementsByName('orderCode')[0].value = orderId;
-
-    // 显示当前时间
-    const currentTime = currentDate.toLocaleString();
-    document.getElementById('current-time').textContent = currentTime;
+    $(document).ready(function() {
+        // 点击地址卡片选择地址
+        $('.address-card').click(function() {
+            $('.address-card').removeClass('selected');
+            $(this).addClass('selected');
+            const addressId = $(this).data('address-id');
+            $('#selectedAddressId').val(addressId);
+        });
+        
+        // 提交订单前验证是否选择了地址
+        $('#orderForm').submit(function(e) {
+            const addressId = $('#selectedAddressId').val();
+            if (!addressId) {
+                e.preventDefault();
+                alert('请选择收货地址');
+                return false;
+            }
+            return true;
+        });
+    });
 </script>
-
-
 </body>
 </html>

@@ -200,7 +200,7 @@
         $('.password-toggle').click(function() {
             const target = $(this).data('target');
             const input = $('#' + target);
-            
+
             if (input.attr('type') === 'password') {
                 input.attr('type', 'text');
                 $(this).find('i').removeClass('bi-eye-slash').addClass('bi-eye');
@@ -209,25 +209,25 @@
                 $(this).find('i').removeClass('bi-eye').addClass('bi-eye-slash');
             }
         });
-        
+
         // 验证新密码格式
         function validatePassword() {
             const password = $('#newPassword').val();
-            
+
             // 检查以大写字母开头
             if (/^[A-Z]/.test(password)) {
                 $('#req-uppercase').addClass('requirement-met').removeClass('requirement-not-met');
             } else {
                 $('#req-uppercase').addClass('requirement-not-met').removeClass('requirement-met');
             }
-            
+
             // 检查长度为6-10位
             if (password.length >= 6 && password.length <= 10) {
                 $('#req-length').addClass('requirement-met').removeClass('requirement-not-met');
             } else {
                 $('#req-length').addClass('requirement-not-met').removeClass('requirement-met');
             }
-            
+
             // 检查只包含字母和数字
             if (/^[a-zA-Z0-9]+$/.test(password)) {
                 $('#req-alphanumeric').addClass('requirement-met').removeClass('requirement-not-met');
@@ -235,26 +235,26 @@
                 $('#req-alphanumeric').addClass('requirement-not-met').removeClass('requirement-met');
             }
         }
-        
+
         // 表单提交
         $('#passwordForm').submit(function(e) {
             e.preventDefault();
-            
+
             // 验证两次密码是否一致
             const newPassword = $('#newPassword').val();
             const confirmPassword = $('#confirmPassword').val();
-            
+
             if (newPassword !== confirmPassword) {
                 showAlert('danger', '两次输入的密码不一致');
                 return;
             }
-            
+
             // 验证新密码格式
             if (!/^[A-Z][a-zA-Z0-9]{5,9}$/.test(newPassword)) {
                 showAlert('danger', '新密码格式不符合要求');
                 return;
             }
-            
+
             // 发送AJAX请求
             const formData = {
                 userId: $('#userId').val(),
@@ -262,7 +262,7 @@
                 newPassword: newPassword,
                 confirmPassword: confirmPassword
             };
-            
+
             $.ajax({
                 url: '/user/password/change',
                 type: 'POST',
@@ -284,14 +284,14 @@
                 }
             });
         });
-        
+
         // 显示提示消息
         function showAlert(type, message) {
             $('#alertBox').removeClass('alert-success alert-danger alert-warning')
                 .addClass('alert-' + type)
                 .find('#alertMessage').text(message);
             $('#alertBox').fadeIn();
-            
+
             // 5秒后自动隐藏
             setTimeout(function() {
                 $('#alertBox').fadeOut();

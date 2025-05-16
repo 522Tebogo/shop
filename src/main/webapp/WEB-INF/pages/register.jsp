@@ -149,21 +149,21 @@
         <div class="logo">
             <div class="default-logo">嗨购商城</div>
         </div>
-        
+
         <div class="register-header">
             <h2>用户注册</h2>
             <p class="text-muted">欢迎加入嗨购商城，请填写以下信息完成注册</p>
         </div>
-        
+
         <div class="register-type-nav">
             <a href="/user/register" class="active">常规注册</a>
             <a href="/user/register/phone">手机号注册</a>
         </div>
-        
+
         <div id="registerAlert" class="alert alert-danger" style="display: none;">
             <i class="bi bi-exclamation-triangle-fill me-2"></i> <span id="alertMessage"></span>
         </div>
-        
+
         <form id="registerForm" enctype="multipart/form-data" accept-charset="UTF-8">
             <div class="row">
                 <div class="col-md-6">
@@ -177,7 +177,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="password" class="form-label">密码</label>
@@ -190,7 +190,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="row">
                 <div class="col-md-6">
                     <div class="mb-3">
@@ -199,7 +199,7 @@
                         <div class="form-text">手机号必须是11位，且以1开头</div>
                     </div>
                 </div>
-                
+
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="email" class="form-label">邮箱地址</label>
@@ -207,19 +207,19 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="mb-4">
                 <label for="avatarInput" class="form-label">上传头像</label>
                 <input type="file" class="form-control" id="avatarInput" name="avatar" accept="image/*" max-size="10485760">
                 <div class="form-text">请选择10MB以内的图片文件</div>
                 <img id="showImage" class="img-thumbnail mt-2" style="max-width: 200px; max-height: 200px; display: none;" />
             </div>
-            
+
             <button type="button" id="submitBtn" class="btn btn-primary">
                 <i class="bi bi-person-plus-fill me-2"></i> 注册
             </button>
         </form>
-        
+
         <div class="register-footer">
             <p>已有账号？<a href="/user/login">立即登录</a></p>
             <p class="mt-3"><small class="text-muted">注册即表示您同意我们的服务条款和隐私政策</small></p>
@@ -232,7 +232,7 @@
         // 验证用户名和密码
         $('#account').on('input', validateUsername);
         $('#password').on('input', validatePassword);
-        
+
         // 头像预览
         $('#avatarInput').change(function() {
             if (this.files && this.files[0]) {
@@ -244,7 +244,7 @@
                     $(this).val('');
                     return;
                 }
-                
+
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     $('#showImage').attr('src', e.target.result).css('display', 'block');
@@ -252,20 +252,20 @@
                 reader.readAsDataURL(this.files[0]);
             }
         });
-        
+
         // 提交注册
         $('#submitBtn').click(function() {
             // 验证表单
             if (!validateForm()) {
                 return;
             }
-            
+
             // 禁用提交按钮
             $(this).prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 注册中...');
-            
+
             // 提交表单
             var formData = new FormData($('#registerForm')[0]);
-            
+
             $.ajax({
                 url: '/user/register',
                 type: 'POST',
@@ -278,7 +278,7 @@
                         $('#registerAlert').removeClass('alert-danger').addClass('alert-success')
                             .find('#alertMessage').text('注册成功！即将跳转到登录页面...');
                         $('#registerAlert').fadeIn();
-                        
+
                         setTimeout(function() {
                             window.location.href = '/user/login';
                         }, 2000);
@@ -293,12 +293,12 @@
                     console.log("错误状态:", status);
                     console.log("错误信息:", error);
                     console.log("HTTP状态码:", xhr.status);
-                    
+
                     let errorMsg = '注册失败，请稍后再试';
                     if (xhr.status === 413) {
                         errorMsg = '上传的文件太大，请选择小于10MB的图片';
                     }
-                    
+
                     $('#registerAlert').removeClass('alert-success').addClass('alert-danger')
                         .find('#alertMessage').text(errorMsg);
                     $('#registerAlert').fadeIn();
@@ -306,90 +306,90 @@
                 }
             });
         });
-        
+
         // 验证表单
         function validateForm() {
             const account = $('#account').val();
             const password = $('#password').val();
             const telphone = $('#telphone').val();
-            
+
             // 验证用户名
             if (!account) {
                 showAlert('请输入用户名');
                 return false;
             }
-            
+
             if (!validateUsername()) {
                 showAlert('用户名格式不正确，只能包含字母和数字，且不能以数字开头，6~10位');
                 return false;
             }
-            
+
             // 验证密码
             if (!password) {
                 showAlert('请输入密码');
                 return false;
             }
-            
+
             if (!validatePassword()) {
                 showAlert('密码格式不正确，必须以大写字母开头，长度6-10位，只包含字母和数字');
                 return false;
             }
-            
+
             // 验证手机号（如果有输入）
             if (telphone && !telphone.match(/^1\d{10}$/)) {
                 showAlert('手机号格式不正确，必须是11位数字，且第一位必须是1');
                 return false;
             }
-            
+
             return true;
         }
-        
+
         // 验证用户名格式
         function validateUsername() {
             const username = $('#account').val();
             let isValid = true;
-            
+
             // 验证不能以数字开头
             const notStartWithNumber = /^[^0-9]/.test(username);
             updateRequirement('req-username-start', notStartWithNumber);
             isValid = isValid && notStartWithNumber;
-            
+
             // 验证长度为6-10位
             const validLength = username.length >= 6 && username.length <= 10;
             updateRequirement('req-username-length', validLength);
             isValid = isValid && validLength;
-            
+
             // 验证只包含字母和数字
             const alphanumericOnly = /^[a-zA-Z0-9]+$/.test(username);
             updateRequirement('req-username-alphanumeric', alphanumericOnly);
             isValid = isValid && alphanumericOnly;
-            
+
             return isValid;
         }
-        
+
         // 验证密码格式
         function validatePassword() {
             const password = $('#password').val();
             let isValid = true;
-            
+
             // 验证以大写字母开头
             const startsWithUppercase = /^[A-Z]/.test(password);
             updateRequirement('req-uppercase', startsWithUppercase);
             isValid = isValid && startsWithUppercase;
-            
+
             // 验证长度为6-10位
             const validLength = password.length >= 6 && password.length <= 10;
             updateRequirement('req-length', validLength);
             isValid = isValid && validLength;
-            
+
             // 验证只包含字母和数字
             const alphanumericOnly = /^[a-zA-Z0-9]+$/.test(password);
             updateRequirement('req-alphanumeric', alphanumericOnly);
             isValid = isValid && alphanumericOnly;
-            
+
             return isValid;
         }
-        
+
         // 更新要求状态
         function updateRequirement(id, isMet) {
             const element = $('#' + id);
@@ -399,12 +399,12 @@
                 element.removeClass('bi-check-circle requirement-met').addClass('bi-x-circle requirement-not-met');
             }
         }
-        
+
         // 显示提示信息
         function showAlert(message) {
             $('#alertMessage').text(message);
             $('#registerAlert').fadeIn();
-            
+
             // 3秒后自动隐藏
             setTimeout(function() {
                 $('#registerAlert').fadeOut();

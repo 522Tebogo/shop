@@ -28,71 +28,75 @@ public class CarController {
     @GetMapping("/toCar")
     public String toCar(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/user/login";
+        }
         List<Goods> goods = itemService.getGoodsByUserId(user.getId());
         System.out.println("这是购物车信息:"+goods);
         model.addAttribute("goods", goods);
+        model.addAttribute("msg", null);
         return "car";
     }
 
     @PostMapping("/add")
     public String add(@RequestParam("goodId") int goodId, @RequestParam("quantity") int num,  HttpSession session,Model model) {
-        String  msg = null;
+        // 检查用户是否登录
         User user = (User) session.getAttribute("user");
-             int count = goodService.getCountById(goodId);
-             int out = goodService.getOutByGoodId(goodId);
-             if(out==1){
-                 model.addAttribute("msg","抱歉，该商品已下架，去看看别的商品吧");
-                 Goods good = goodService.getGoodById(goodId);
-                 model.addAttribute("good", good);
-                 return "single_info";
-             }
-             if(count < num){
-                 System.out.println("库存不足，无法出货！");
-                 model.addAttribute("msg","库存不足，无法出货");
-                 Goods good = goodService.getGoodById(goodId);
-                 model.addAttribute("good", good);
-                 return "single_info";
-             }
-            if(user ==null)
-            {
-                return "login";
-            }
+        if(user == null) {
+            return "redirect:/user/login";
+        }
+        
+        String msg = null;
+        int count = goodService.getCountById(goodId);
+        int out = goodService.getOutByGoodId(goodId);
+        if(out==1){
+            model.addAttribute("msg","抱歉，该商品已下架，去看看别的商品吧");
+            Goods good = goodService.getGoodById(goodId);
+            model.addAttribute("good", good);
+            return "single_info";
+        }
+        if(count < num){
+            System.out.println("库存不足，无法出货！");
+            model.addAttribute("msg","库存不足，无法出货");
+            Goods good = goodService.getGoodById(goodId);
+            model.addAttribute("good", good);
+            return "single_info";
+        }
 
-            int userid = user.getId();
-            boolean isEmpty = this.isSingle(userid,goodId);
-            if(isEmpty==true) {
-                int res = itemService.addGoodItem(userid, goodId, num);
-                if (res == 1) {
-                    System.out.println("添加成功");
-                    List<Goods> goods = itemService.getGoodsByUserId(user.getId());
-                    System.out.println("拿到的商品信息:"+goods);
-                    model.addAttribute("goods", goods);
-                    int mark =goodService.minusCount(goodId,num);
-                    return "car";
-                } else {
-                    System.out.println("添加失败");
-                    return "";
-                }
-            }
-            else{
-                    itemService.addNum(userid,goodId,num);
+        int userid = user.getId();
+        boolean isEmpty = this.isSingle(userid,goodId);
+        if(isEmpty==true) {
+            int res = itemService.addGoodItem(userid, goodId, num);
+            if (res == 1) {
+                System.out.println("添加成功");
                 List<Goods> goods = itemService.getGoodsByUserId(user.getId());
+                System.out.println("拿到的商品信息:"+goods);
                 model.addAttribute("goods", goods);
-
                 int mark =goodService.minusCount(goodId,num);
                 return "car";
+            } else {
+                System.out.println("添加失败");
+                return "";
             }
-
         }
+        else{
+                itemService.addNum(userid,goodId,num);
+            List<Goods> goods = itemService.getGoodsByUserId(user.getId());
+            model.addAttribute("goods", goods);
 
-        public boolean isSingle(int userid,int goodId) {
-                List<Goods> goods = itemService.isSingle(userid,goodId);
-                if (goods.size()>0) {
-                    return false;
-                }
-                else
-                    return true;
+            int mark =goodService.minusCount(goodId,num);
+            return "car";
         }
+    }
+
+    public boolean isSingle(int userid,int goodId) {
+            List<Goods> goods = itemService.isSingle(userid,goodId);
+            if (goods.size()>0) {
+                return false;
+            }
+            else
+                return true;
+    }
     @PostMapping("/updateQuantity")
     @ResponseBody
     public Map<String, Object> updateQuantity(@RequestBody Map<String, Integer> requestData, HttpSession session) {

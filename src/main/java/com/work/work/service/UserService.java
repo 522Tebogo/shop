@@ -9,15 +9,24 @@ import java.util.Map;
 
 public interface UserService {
 
+    /**
+     * 用户名密码登录
+     */
     User login(String account, String password, HttpSession session);
 
-
+    /**
+     * 手机号验证码登录
+     */
     User loginByPhone(String phone, String code, HttpSession session);
 
-
+    /**
+     * 邮箱验证码登录
+     */
     User loginByEmail(String email, String code, HttpSession session);
 
-
+    /**
+     * 手机号验证码注册
+     */
     boolean registerByPhone(String phone, String code, String password, String account, MultipartFile avatar, HttpSession session) throws IOException;
 
     /**
@@ -76,5 +85,4 @@ public interface UserService {
      * 绑定/修改邮箱
      */
     boolean changeEmail(Integer userId, String newEmail, String code, HttpSession session);
-
 }

@@ -6,7 +6,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>我的购物车 - 嗨购商城</title>
+    <title>编辑订单 - 嗨购商城</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <style>
@@ -37,6 +37,28 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             margin-top: 30px;
         }
+        .address-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        .address-item {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .address-item:hover, .address-item.selected {
+            border-color: #0d6efd;
+            background-color: #f0f7ff;
+        }
+        .address-item.selected {
+            box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+        }
     </style>
 </head>
 <body>
@@ -60,6 +82,38 @@
     </c:if>
 
     <c:if test="${not empty goods}">
+        <!-- 收货地址选择区域 -->
+        <div class="address-card">
+            <h4><i class="bi bi-geo-alt"></i> 收货地址</h4>
+            <hr>
+            <c:if test="${empty addresses}">
+                <p class="text-muted">您还没有添加收货地址，<a href="/address/add" class="btn btn-sm btn-outline-primary">添加地址</a></p>
+            </c:if>
+            <c:if test="${not empty addresses}">
+                <div class="address-list">
+                    <c:forEach var="address" items="${addresses}">
+                        <div class="address-item ${address.id eq order.addressId ? 'selected' : ''}" data-address-id="${address.id}">
+                            <div class="d-flex justify-content-between">
+                                <strong>${address.receiver}</strong>
+                                <span>${address.phone}</span>
+                            </div>
+                            <div class="text-muted mt-2">
+                                ${address.province}${address.city}${address.district}${address.detailAddress}
+                                <c:if test="${address.isDefault}">
+                                    <span class="badge bg-primary ms-2">默认</span>
+                                </c:if>
+                            </div>
+                        </div>
+                    </c:forEach>
+                </div>
+                <div class="mt-3">
+                    <a href="/address/add" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-plus-circle"></i> 新建收货地址
+                    </a>
+                </div>
+            </c:if>
+        </div>
+        
         <%-- 后端先算出初始价格 --%>
         <c:set var="totalPrice" value="0" />
         <c:forEach var="item" items="${goods}">
@@ -95,7 +149,7 @@
                 <strong id="total-price">¥<fmt:formatNumber value="${totalPrice}" type="number" minFractionDigits="2" /></strong>
             </div>
             <div class="d-flex justify-content-between">
-                <span>运费 (5%):</span>
+                <span>运费 (2%):</span>
                 <strong id="shipping-fee">¥<fmt:formatNumber value="${shippingFee}" type="number" minFractionDigits="2" /></strong>
             </div>
             <hr>
@@ -106,10 +160,12 @@
             <div class="text-end mt-3">
                 <form method="post" action="/order/update">
                     <input type="hidden" name="orderCode" value="${orderCode}" />
+                    <input type="hidden" name="addressId" id="selectedAddressId" value="${order.addressId}" />
                     <c:forEach var="item" items="${goods}">
                         <input type="hidden" name="goodsId" value="${item.id}" />
                         <input type="hidden" name="nums" id="hidden-num-${item.id}" value="${item.num}" />
                     </c:forEach>
+                    <a href="/order/getOrder" class="btn btn-outline-secondary me-2">取消</a>
                     <button type="submit" class="btn btn-primary">保存</button>
                 </form>
             </div>
@@ -118,8 +174,24 @@
 </div>
 
 <script>
-    const orderCode = ${orderCode}; // 直接拿 JSP 变量赋值给 JS
+    const orderCode = "${orderCode}"; // 使用字符串形式，避免Long类型转换问题
 
+    // 处理地址选择
+    document.querySelectorAll('.address-item').forEach(item => {
+        item.addEventListener('click', () => {
+            // 移除其他所有选中状态
+            document.querySelectorAll('.address-item').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // 为当前点击的添加选中状态
+            item.classList.add('selected');
+            
+            // 更新隐藏字段的值
+            const addressId = item.getAttribute('data-address-id');
+            document.getElementById('selectedAddressId').value = addressId;
+        });
+    });
 
     // 监听数量变化并更新服务器与前端总价
     document.querySelectorAll('.quantity-input').forEach(input => {
@@ -137,7 +209,7 @@
             fetch('/car/updateQuantityTwo', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ goodId, quantity ,orderCode})
+                body: JSON.stringify({ goodId, quantity, orderCode: Number(orderCode) })
             })
                 .then(res => res.json())
                 .then(data => {

@@ -16,17 +16,18 @@ import java.util.List;
 public class IndexController {
 
     @Autowired
-    GoodService goodService;
+    private GoodService goodService;
+
     @GetMapping("")
     public String index(HttpSession session, Model model) {
         // Get user info from session
         Object user = session.getAttribute("user");
-        List<Goods> goods = goodService.getRandomGoods();
+
         // If user is logged in, add user info to model
         if (user != null) {
             model.addAttribute("user", user);
         }
-        model.addAttribute("goods", goods);
+
         // If there is a success message, get it from session and add to model
         Object successMessage = session.getAttribute("successMessage");
         if (successMessage != null) {
@@ -34,6 +35,10 @@ public class IndexController {
             // Clear message after displaying it once
             session.removeAttribute("successMessage");
         }
+
+        // 获取随机商品并添加到模型中
+        List<Goods> randomGoods = goodService.getRandomGoods();
+        model.addAttribute("goods", randomGoods);
 
         return "index";
     }
@@ -43,4 +48,4 @@ public class IndexController {
         // Redirect /index requests to homepage
         return "redirect:/";
     }
-}
+} 

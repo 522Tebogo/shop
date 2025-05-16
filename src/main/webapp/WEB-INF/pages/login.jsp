@@ -131,82 +131,118 @@
 </head>
 
 <body>
-    <!-- 调试信息 -->
-    <% System.out.println("Login JSP - 成功消息: " + request.getAttribute("successMessage")); %>
-    <% System.out.println("Login JSP - 错误消息: " + request.getAttribute("loginError")); %>
-    
-    <div class="container">
-        <div class="login-container">
-            <div class="logo">
-                <div class="default-logo">嗨购商城</div>
-            </div>
-            
-            <div class="login-header">
-                <h2>用户登录</h2>
-                <p class="text-muted">欢迎回来！请输入您的账号信息</p>
-            </div>
-            
-            <div class="login-type-nav">
-                <a href="/user/login" class="active">账号密码登录</a>
-                <a href="/user/login/phone">手机验证码登录</a>
-                <a href="/user/login/email">邮箱验证码登录</a>
-            </div>
-            
-            <!-- 显示成功消息 -->
-            <c:if test="${not empty successMessage}">
-                <div class="alert alert-success">
-                    <i class="bi bi-check-circle-fill me-2"></i> ${successMessage}
-                </div>
-            </c:if>
-            
-            <!-- 显示错误消息 -->
-            <c:if test="${not empty loginError}">
-                <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> ${loginError}
-                </div>
-            </c:if>
-            
-            <!-- 用户登录表单 -->
-            <form action="/user/login" method="post" id="userLoginForm">
-                <div class="mb-3">
-                    <label for="account" class="form-label">用户名</label>
-                    <input type="text" class="form-control" id="account" name="account" placeholder="请输入您的用户名" required>
-                    <div class="form-text">用户名只能包含字母和数字，且不能以数字开头，6~10位</div>
-                </div>
-                
-                <div class="mb-3">
-                    <label for="password" class="form-label">密码</label>
-                    <input type="password" class="form-control" id="password" name="password" placeholder="请输入您的密码" required>
-                    <div class="form-text">密码只能包含字母和数字，且必须以大写字母开头，6~10位</div>
-                </div>
-                
-                <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" id="remember">
-                    <label class="form-check-label" for="remember">记住我</label>
-                </div>
-                
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-box-arrow-in-right me-2"></i> 登录
-                </button>
-            </form>
-            
-            <div class="login-footer">
-                <p>还没有账号？<a href="/user/register">立即注册</a></p>
-                <p class="mt-3"><small class="text-muted">登录即表示您同意我们的服务条款和隐私政策</small></p>
+<!-- 调试信息 -->
+<% System.out.println("Login JSP - 成功消息: " + request.getAttribute("successMessage")); %>
+<% System.out.println("Login JSP - 错误消息: " + request.getAttribute("loginError")); %>
+
+<div class="container">
+    <div class="login-container">
+        <div class="logo">
+            <div class="default-logo">嗨购商城</div>
+        </div>
+
+        <div class="login-header">
+            <h2>用户登录</h2>
+            <p class="text-muted">欢迎回来！请输入您的账号信息</p>
+        </div>
+
+        <div class="login-type-nav">
+            <a href="/user/login" class="active">账号密码登录</a>
+            <a href="/user/login/phone">手机验证码登录</a>
+            <a href="/user/login/email">邮箱验证码登录</a>
+        </div>
+
+        <!-- 用户/管理员切换 -->
+        <div class="text-center mb-4">
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="role" id="userRole" value="user" checked>
+                <label class="btn btn-outline-primary" for="userRole">
+                    <i class="bi bi-person"></i> 用户登录
+                </label>
+                <input type="radio" class="btn-check" name="role" id="adminRole" value="admin">
+                <label class="btn btn-outline-primary" for="adminRole">
+                    <i class="bi bi-shield-lock"></i> 管理员登录
+                </label>
             </div>
         </div>
+
+        <!-- 显示成功消息 -->
+        <c:if test="${not empty successMessage}">
+            <div class="alert alert-success">
+                <i class="bi bi-check-circle-fill me-2"></i> ${successMessage}
+            </div>
+        </c:if>
+
+        <!-- 显示错误消息 -->
+        <c:if test="${not empty loginError}">
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> ${loginError}
+            </div>
+        </c:if>
+
+        <!-- 用户登录表单 -->
+        <form action="/user/login" method="post" id="userLoginForm">
+            <div class="mb-3">
+                <label for="account" class="form-label">用户名</label>
+                <input type="text" class="form-control" id="account" name="account" placeholder="请输入您的用户名" required>
+                <div class="form-text">用户名只能包含字母和数字，且不能以数字开头，6~10位</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">密码</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="请输入您的密码" required>
+                <div class="form-text">密码只能包含字母和数字，且必须以大写字母开头，6~10位</div>
+            </div>
+
+            <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="remember">
+                <label class="form-check-label" for="remember">记住我</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-box-arrow-in-right me-2"></i> 登录
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <p>还没有账号？<a href="/user/register">立即注册</a></p>
+            <p class="mt-3"><small class="text-muted">登录即表示您同意我们的服务条款和隐私政策</small></p>
+        </div>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // 修复登录切换方式
-            $('.login-type-nav a').click(function(e) {
-                const href = $(this).attr('href');
-                window.location.href = href;
-            });
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // 修复登录切换方式
+        $('.login-type-nav a').click(function(e) {
+            const href = $(this).attr('href');
+            window.location.href = href;
         });
-    </script>
+    });
+
+    // 角色切换
+    document.addEventListener('DOMContentLoaded', function() {
+        const userRole = document.getElementById('userRole');
+        const adminRole = document.getElementById('adminRole');
+        const loginForm = document.getElementById('userLoginForm');
+
+        // 切换角色
+        userRole.addEventListener('change', function() {
+            if(this.checked) {
+                loginForm.action = '/user/login';
+                document.querySelector('.login-header h2').textContent = '用户登录';
+            }
+        });
+
+        adminRole.addEventListener('change', function() {
+            if(this.checked) {
+                loginForm.action = '/admin/login';
+                document.querySelector('.login-header h2').textContent = '管理员登录';
+            }
+        });
+    });
+</script>
 </body>
 </html>

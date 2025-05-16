@@ -180,7 +180,13 @@
     </c:if>
 </span>
                     </div>
-
+                    <c:if test="${not empty order.receiver}">
+                        <div class="address-info">
+                            <h6 class="mb-2"><i class="bi bi-geo-alt-fill"></i> 收货信息</h6>
+                            <p><strong>收件人：</strong>${order.receiver} <strong class="ms-3">电话：</strong>${order.phone}</p>
+                            <p><strong>收货地址：</strong>${order.address}</p>
+                        </div>
+                    </c:if>
                     <table class="table goods-table mb-0">
                         <thead>
                         <tr>
@@ -209,6 +215,13 @@
                         </c:forEach>
                         </tbody>
                     </table>
+                    <c:if test="${order.payed == 1}">
+                        <div class="d-flex justify-content-end mt-3">
+                            <a href="${pageContext.request.contextPath}/invoice/check/${order.orderCode}" class="btn btn-primary">
+                                <i class="bi bi-receipt"></i> 打印发票
+                            </a>
+                        </div>
+                    </c:if>
                 </div>
             </c:forEach>
         </c:otherwise>

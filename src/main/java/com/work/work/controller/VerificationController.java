@@ -16,13 +16,13 @@ public class VerificationController {
 
     @Autowired
     private VerificationService verificationService;
-
+    
+    /**
+     * Send phone verification code
+     */
     @PostMapping("/sendPhoneCode")
     @ResponseBody
     public String sendPhoneCode(@RequestParam String phone) {
-
-        System.out.println("准备发送验证码");
-
         System.out.println("发送手机验证码到: " + phone);
         
         // Validate phone format

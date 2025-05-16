@@ -69,6 +69,4 @@ public class GoodServiceImpl implements GoodService {
     }
 
 
-
-
 }
