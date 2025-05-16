@@ -17,6 +17,9 @@ public interface OrderService {
     void updateOrder(long orderCode, int userId, List<Integer> goodsIds, List<Integer> quantities);
     List<Integer> getGoodIdByCode(long orderCode);
     int getCodeNum(int userid ,int goodid, long orderCode);
+    String payOrder(int userId, long orderCode, HttpSession session);
 
+    void orderSuccess(int userId,long orderCode );
+    void setPayed(long orderCode);
 
 }

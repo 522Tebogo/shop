@@ -3,10 +3,12 @@ package com.work.work.service.ServiceImpl;
 import com.work.work.entity.Goods;
 import com.work.work.entity.Order;
 import com.work.work.mapper.OrderMapper;
+import com.work.work.service.ItemService;
 import com.work.work.service.OrderService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,7 +16,10 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderMapper orderMapper;
-
+    @Autowired
+    AlipayService alipayService;
+    @Autowired
+    ItemService itemService;
     @Override
     public boolean createOrder(int userId, double totalPrice, long orderCode, HttpSession session) {
         System.out.println("用户id:"+userId);
@@ -77,6 +82,36 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public int getCodeNum(int userid, int goodid, long orderCode) {
         return orderMapper.getCodeNum(userid,goodid,orderCode);
+    }
+
+
+
+    @Transactional
+    public String payOrder(int userId, long orderCode,HttpSession session) {
+        System.out.println("到了页面处理");
+  //1.购物车里是否有数据
+  List<Goods> cartItems = itemService.getGoodsByUserIdTwo(orderCode,userId);
+        System.out.println("购物车信息:"+cartItems);
+  if (cartItems == null || cartItems.isEmpty()) return null;
+
+  //获取支付金额
+  int totalMoney = orderMapper.getPriceByCode(orderCode);
+  //接入支付宝：
+  String form = alipayService.createPayment(orderCode, ""+totalMoney, "支付订单:"+orderCode);
+  //保存订单id
+  session.setAttribute("orderCode",orderCode);
+
+  return form;
+    }
+
+    @Override
+    public void orderSuccess(int userid ,long orderCode) {
+            orderMapper.setPayed(orderCode);
+    }
+
+    @Override
+    public void setPayed(long orderCode) {
+        orderMapper.setPayed(orderCode);
     }
 
 

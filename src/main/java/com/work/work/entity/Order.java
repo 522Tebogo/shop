@@ -11,4 +11,5 @@ public class Order {
     private long orderCode;
     private  Double totalPrice;
     private Date createTime;
+    private int payed;
 }

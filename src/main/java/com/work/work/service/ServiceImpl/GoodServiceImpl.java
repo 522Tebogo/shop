@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class GoodServiceImpl implements GoodService {
@@ -68,6 +67,8 @@ public class GoodServiceImpl implements GoodService {
     public int getOutByGoodId(int goodid) {
         return goodMapper.getOutByGoodId(goodid);
     }
+
+
 
 
 }

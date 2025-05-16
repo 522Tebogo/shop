@@ -7,13 +7,12 @@ import com.work.work.service.GoodService;
 import com.work.work.service.ItemService;
 import com.work.work.service.OrderService;
 import jakarta.servlet.http.HttpSession;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,20 +62,24 @@ public class OrderController {
         int userId = user.getId();
         List<Order> orderList = orderService.getOrderListByUserId(userId);
 
-        // 为每个订单设置商品列表（可用Map或者给Order加个属性）
+        // 先对订单列表进行排序：payed升序，createTime降序
+        orderList.sort(Comparator
+                .comparingInt(Order::getPayed)              // payed升序（0在前）
+                .thenComparing(Order::getCreateTime, Comparator.reverseOrder())  // createTime降序（新订单靠前）
+        );
+
+        // 获取订单对应商品
         Map<Long, List<Goods>> orderGoodsMap = new HashMap<>();
         for (Order order : orderList) {
             List<Goods> goodsList = orderService.getGoodsByOrderCode(order.getOrderCode());
-            System.out.println("这个订单信息:"+goodsList);
             orderGoodsMap.put(order.getOrderCode(), goodsList);
         }
 
-        System.out.println("这是订单信息:"+orderList);
-        System.out.println("这是详情:"+orderGoodsMap);
         model.addAttribute("orderList", orderList);
         model.addAttribute("orderGoodsMap", orderGoodsMap);
         return "order_list";
     }
+
 
 
 
@@ -151,5 +154,31 @@ public class OrderController {
         return "order_list";
     }
 
+    @PostMapping("/pay/now")
+    @ResponseBody
+  public String payOrder(long orderCode,HttpSession session) {
+        System.out.println("到了支付宝");
+    User user = (User) session.getAttribute("user");
+    if (user == null || "".equals(orderCode)) {
+      return "login";
+     }
+    Integer userId = user.getId();
+    return orderService.payOrder(userId,orderCode,session);
+   }
 
+    @GetMapping("/alipay/return")
+
+    public String returnOrder(HttpSession session,Model model) {
+        System.out.println("这是支付完成之后");
+    User user = (User) session.getAttribute("user");
+    if (user == null) {
+      return "login";
+     }
+    Integer userId = user.getId();
+    long orderCode = (long) session.getAttribute("orderCode");
+    orderService.orderSuccess(userId,orderCode);
+
+    return this.getOrder(session,model);
+
+   }
 }

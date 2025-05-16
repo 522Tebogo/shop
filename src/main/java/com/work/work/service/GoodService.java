@@ -4,7 +4,6 @@ import com.work.work.entity.Goods;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public interface GoodService {

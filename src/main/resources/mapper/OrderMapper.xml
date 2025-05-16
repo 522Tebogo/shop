@@ -56,4 +56,13 @@
 <select id="getCodeNum">
     SELECT num FROM wn_caritem WHERE userid = #{userid} AND goodid = #{goodid} AND code  = #{orderCode}
 </select>
+
+    <select id="getPriceByCode">
+        SELECT totalPrice FROM orders WHERE order_code = #{orderCode}
+    </select>
+    <update id="setPayed">
+        UPDATE orders
+        SET payed = 1
+        WHERE order_code = #{orderCode}
+    </update>
 </mapper>

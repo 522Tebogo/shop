@@ -18,4 +18,6 @@ public interface OrderMapper {
     int updateOrderTotalPrice(long orderCode,double totalPrice);
     List<Integer> getGoodIdByCode(long orderCode);
     int getCodeNum(int userid ,int goodid, long orderCode);
+    int getPriceByCode(long orderCode);
+    void setPayed(long orderCode);
 }

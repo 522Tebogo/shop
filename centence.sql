@@ -2,12 +2,14 @@ create table goods
 (
     id            int auto_increment
         primary key,
-    name          varchar(100) not null,
-    NormalPrice   int          not null,
-    SurprisePrice int          not null,
-    imageUrl      longtext     not null,
-    description   varchar(255) not null,
-    category      varchar(100) not null
+    name          varchar(100)     not null,
+    NormalPrice   int              not null,
+    SurprisePrice int              not null,
+    imageUrl      longtext         not null,
+    description   varchar(255)     not null,
+    category      varchar(100)     not null,
+    stock         int default 1000 not null,
+    is_out        tinyint(1)       not null
 );
 
 create table orders

@@ -161,15 +161,24 @@
                     <div class="order-header">
                         订单号：${order.orderCode}
                         <span class="order-info float-end">
-                            下单时间：<fmt:formatDate value="${order.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/>
-总金额：<span class="text-danger fw-bold">¥<fmt:formatNumber value="${order.totalPrice}" type="number" minFractionDigits="2" maxFractionDigits="2"/></span>
-                            <a href="/order/edit/${order.orderCode}" class="btn btn-sm btn-outline-primary me-2">
+    下单时间：<fmt:formatDate value="${order.createTime}" pattern="yyyy-MM-dd HH:mm:ss"/>
+    总金额：<span class="text-danger fw-bold">¥<fmt:formatNumber value="${order.totalPrice}" type="number" minFractionDigits="2" maxFractionDigits="2"/></span>
+
+    <c:if test="${order.payed == 0}">
+        <a href="/order/edit/${order.orderCode}" class="btn btn-sm btn-outline-primary me-2">
             <i class="bi bi-pencil"></i> 编辑
         </a>
         <a href="/order/delete/${order.orderCode}" class="btn btn-sm btn-outline-danger" onclick="return confirm('确定要删除该订单吗？');">
             <i class="bi bi-trash"></i> 删除
         </a>
-                        </span>
+        <button type="button" class="btn btn-sm btn-success submit_pay" data-order="${order.orderCode}">
+            <i class="bi bi-wallet2"></i> 立即支付
+        </button>
+    </c:if>
+    <c:if test="${order.payed == 1}">
+        <span class="badge bg-success">已支付</span>
+    </c:if>
+</span>
                     </div>
 
                     <table class="table goods-table mb-0">
@@ -214,5 +223,26 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- 确保引入 jQuery -->
+
+<script>
+    $(document).on('click', '.submit_pay', function () {
+        var orderCode = $(this).data('order');  // 从按钮的 data-order 属性获取订单号
+        $.ajax({
+            url: "/order/pay/now",
+            type: "post",
+            data: {
+                orderCode: orderCode
+            },
+            success: function (res) {
+                if (res) {
+                    window.location.href = res;
+                } else {
+                    alert("支付宝提交失败，请重新尝试");
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>
