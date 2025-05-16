@@ -19,4 +19,5 @@ public interface GoodMapper {
 
     int getCountByTripleId(int userId ,int goodId,long orderCode);
     int changeCount(int goodid,int num);
+    int getOutByGoodId(int goodid);
 }

@@ -36,6 +36,13 @@ public class CarController {
         String  msg = null;
         User user = (User) session.getAttribute("user");
              int count = goodService.getCountById(goodId);
+             int out = goodService.getOutByGoodId(goodId);
+             if(out==1){
+                 model.addAttribute("msg","抱歉，该商品已下架，去看看别的商品吧");
+                 Goods good = goodService.getGoodById(goodId);
+                 model.addAttribute("good", good);
+                 return "single_info";
+             }
              if(count < num){
                  System.out.println("库存不足，无法出货！");
                  model.addAttribute("msg","库存不足，无法出货");

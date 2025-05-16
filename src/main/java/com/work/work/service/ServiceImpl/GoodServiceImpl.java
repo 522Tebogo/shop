@@ -64,5 +64,10 @@ public class GoodServiceImpl implements GoodService {
         return goodMapper.changeCount(goodid,num);
     }
 
+    @Override
+    public int getOutByGoodId(int goodid) {
+        return goodMapper.getOutByGoodId(goodid);
+    }
+
 
 }
