@@ -174,22 +174,7 @@
         </c:if>
     </div>
 
-    <!-- 搜索框 -->
-    <div class="search-box mb-4">
-        <form action="/invoice/search" method="get" class="row g-3">
-            <div class="col-md-5">
-                <input type="text" name="invoiceNumber" class="form-control" placeholder="发票号码" value="${param.invoiceNumber}">
-            </div>
-            <div class="col-md-5">
-                <input type="text" name="orderCode" class="form-control" placeholder="订单号" value="${param.orderCode}">
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-search"></i> 搜索
-                </button>
-            </div>
-        </form>
-    </div>
+
 
     <!-- 发票表格 -->
     <div class="card">
