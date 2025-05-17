@@ -33,29 +33,44 @@ public class GoodController {
     }
 
     @GetMapping("/all")
-    public String all(@RequestParam(name = "category", required = false) String category, Model model) {
+    public String all(@RequestParam(name = "category", required = false) String category,
+                      @RequestParam(name = "page", defaultValue = "1") int page,
+                      Model model) {
         System.out.println("这是种类:"+category);
         List<Goods> goods;
         if (category != null && !category.isEmpty()) {
             goods = goodService.getGoodsByCategory(category);
         } else {
-            goods = goodService.getActiveGoods();
+            goods = goodService.getAllGoods();
         }
 
-        System.out.println("筛选的商品信息如下:"+goods);
-        model.addAttribute("goods", goods);
+        // 计算分页信息
+        int totalItems = goods.size();
+        int totalPages = (int) Math.ceil((double) totalItems / PAGE_SIZE);
+
+        // 确保页码在有效范围内
+        page = Math.max(1, Math.min(page, totalPages));
+
+        // 获取当前页的商品
+        int fromIndex = (page - 1) * PAGE_SIZE;
+        int toIndex = Math.min(fromIndex + PAGE_SIZE, totalItems);
+        List<Goods> pagedGoods = goods.subList(fromIndex, toIndex);
+
+        model.addAttribute("goods", pagedGoods);
         model.addAttribute("category", category);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
         return "all_goods";
     }
     @GetMapping("/hot")
-    public String hot(@RequestParam(name = "page", defaultValue = "0") int page,
+    public String hot(@RequestParam(name = "page", defaultValue = "1") int page,
                       Model model) {
         // 获取总商品数
         int totalItems = goodService.countAllGoods();
         int totalPages = (int) Math.ceil((double) totalItems / PAGE_SIZE);
 
         // 确保页码在有效范围内
-        page = Math.max(0, Math.min(page, totalPages));
+        page = Math.max(1, Math.min(page, totalPages));
 
         // 获取当前页的热卖商品
         List<Goods> hotGoods = goodService.getHotGoodsByPage(page, PAGE_SIZE);

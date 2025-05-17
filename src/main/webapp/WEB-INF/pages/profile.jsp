@@ -164,6 +164,9 @@
                             <i class="bi bi-camera-fill me-2"></i> 更换头像
                             <input type="file" id="avatar" name="avatar" accept="image/*">
                         </label>
+                        <div class="form-text mt-2">
+                            支持 jpg、png、gif 格式，文件大小不超过 10MB
+                        </div>
                     </div>
                 </div>
 
@@ -243,32 +246,43 @@
                     $(this).val('');
                     return;
                 }
-                
+
+                // 检查文件类型
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(this.files[0].type)) {
+                    showAlert('danger', '请选择 jpg、png 或 gif 格式的图片');
+                    $(this).val('');
+                    return;
+                }
+
                 var reader = new FileReader();
                 reader.onload = function(e) {
                     $('#avatarPreview').attr('src', e.target.result);
                 };
                 reader.readAsDataURL(this.files[0]);
+
+                // 显示上传提示
+                showAlert('info', '头像已选择，点击"保存修改"按钮完成更新');
             }
         });
-        
+
         // 提交表单
         $('#submitBtn').click(function() {
             // 禁用提交按钮
             $(this).prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 保存中...');
-            
+
             // 创建FormData对象
             var formData = new FormData();
             formData.append('userId', $('#userId').val());
             formData.append('nickname', $('#nickname').val());
             formData.append('account', $('#account').val());
-            
+
             // 添加头像文件（如果有选择）
             var avatarFile = $('#avatar')[0].files[0];
             if (avatarFile) {
                 formData.append('avatar', avatarFile);
             }
-            
+
             // 提交请求
             $.ajax({
                 url: '/user/profile/update',
@@ -287,24 +301,45 @@
                         $('#submitBtn').prop('disabled', false).html('<i class="bi bi-check-circle-fill me-2"></i> 保存修改');
                     }
                 },
-                error: function() {
-                    showAlert('danger', '更新失败，请稍后再试');
+                error: function(xhr) {
+                    let errorMessage = '更新失败，请稍后再试';
+                    if (xhr.responseText) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            errorMessage = response.message || errorMessage;
+                        } catch (e) {
+                            errorMessage = xhr.responseText || errorMessage;
+                        }
+                    }
+                    showAlert('danger', errorMessage);
                     $('#submitBtn').prop('disabled', false).html('<i class="bi bi-check-circle-fill me-2"></i> 保存修改');
                 }
             });
         });
-        
+
         // 显示提示信息
         function showAlert(type, message) {
             const alertBox = $('#alertBox');
             const alertMessage = $('#alertMessage');
-            
-            alertBox.removeClass('alert-success alert-danger').addClass('alert-' + type);
+
+            // 设置不同类型的提示样式
+            const alertClasses = {
+                'success': 'alert-success',
+                'danger': 'alert-danger',
+                'info': 'alert-info',
+                'warning': 'alert-warning'
+            };
+
+            // 移除所有可能的alert类
+            alertBox.removeClass('alert-success alert-danger alert-info alert-warning');
+            // 添加对应类型的样式
+            alertBox.addClass(alertClasses[type]);
+
             alertMessage.text(message);
             alertBox.fadeIn();
-            
-            // 自动隐藏（成功消息）
-            if (type === 'success') {
+
+            // 自动隐藏（成功和提示消息）
+            if (type === 'success' || type === 'info') {
                 setTimeout(function() {
                     alertBox.fadeOut();
                 }, 3000);

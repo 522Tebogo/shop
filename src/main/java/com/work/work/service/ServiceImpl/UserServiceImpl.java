@@ -496,20 +496,23 @@ public class UserServiceImpl implements UserService {
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             logger.info("Avatar file saved successfully: {}. Original: {}", filePath.toAbsolutePath(), originalFilename);
 
-            // 删除旧头像文件（如果存在且不是默认头像）
-            User currentUser = (User) session.getAttribute("user");
-            if (currentUser != null && currentUser.getAvatar() != null
-                    && !currentUser.getAvatar().equals("/static/images/default_avatar.png")) {
-                try {
-                    String oldAvatarPath = currentUser.getAvatar();
-                    if (oldAvatarPath.startsWith("/static/images/avatars/")) {
-                        String oldFileName = oldAvatarPath.substring(oldAvatarPath.lastIndexOf("/") + 1);
-                        Path oldFilePath = uploadPath.resolve(oldFileName);
-                        Files.deleteIfExists(oldFilePath);
-                        logger.info("Old avatar file deleted: {}", oldFilePath);
+            // 只有当session不为null时才尝试删除旧头像
+            if (session != null) {
+                // 删除旧头像文件（如果存在且不是默认头像）
+                User currentUser = (User) session.getAttribute("user");
+                if (currentUser != null && currentUser.getAvatar() != null
+                        && !currentUser.getAvatar().equals("/static/images/default_avatar.png")) {
+                    try {
+                        String oldAvatarPath = currentUser.getAvatar();
+                        if (oldAvatarPath.startsWith("/static/images/avatars/")) {
+                            String oldFileName = oldAvatarPath.substring(oldAvatarPath.lastIndexOf("/") + 1);
+                            Path oldFilePath = uploadPath.resolve(oldFileName);
+                            Files.deleteIfExists(oldFilePath);
+                            logger.info("Old avatar file deleted: {}", oldFilePath);
+                        }
+                    } catch (Exception e) {
+                        logger.warn("Failed to delete old avatar file", e);
                     }
-                } catch (Exception e) {
-                    logger.warn("Failed to delete old avatar file", e);
                 }
             }
 

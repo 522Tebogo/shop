@@ -19,7 +19,7 @@
         SELECT * FROM Goods WHERE is_out = 0
     </select>
     <select id="getGoodsByCategory" resultType="com.work.work.entity.Goods">
-        SELECT id, name, NormalPrice, SurprisePrice, imageUrl, description, category,sales FROM Goods WHERE category = #{category} AND is_out=0
+        SELECT * FROM Goods WHERE category = #{category} AND is_out=0
     </select>
 
     <!-- 获取总记录数 -->
