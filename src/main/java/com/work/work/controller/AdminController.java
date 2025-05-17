@@ -256,22 +256,47 @@ public class AdminController {
                               HttpSession session,
                               RedirectAttributes redirectAttributes) {
         logger.info("尝试删除商品 ID: {}", goodId);
+
+        // 检查管理员权限
         if (!isAdminSession(session)) {
             redirectAttributes.addFlashAttribute("errorMessage", "请先以管理员身份登录。");
             return "redirect:/user/login";
         }
+
         User adminUser = (User) session.getAttribute("user");
         Goods goodToDelete = goodService.getGoodById(goodId);
+
+        // 处理图片路径
         String imagePathToDeleteOnFS = null;
         if (goodToDelete != null && goodToDelete.getImageUrl() != null && !goodToDelete.getImageUrl().isEmpty()) {
-            String relativeImagePath = goodToDelete.getImageUrl();
-            String filename = relativeImagePath.substring(relativeImagePath.lastIndexOf("/") + 1);
-            imagePathToDeleteOnFS = Paths.get(goodsUploadDir, filename).toString();
+            try {
+                // 清理URL中的查询参数和非法字符
+                String cleanImageUrl = goodToDelete.getImageUrl().split("\\?")[0];
+                // 获取文件名部分
+                String filename = cleanImageUrl.substring(cleanImageUrl.lastIndexOf("/") + 1);
+                // 构建完整的文件系统路径
+                imagePathToDeleteOnFS = Paths.get(goodsUploadDir, filename).normalize().toString();
+
+                // 安全验证：确保路径在允许的目录下
+                Path resolvedPath = Paths.get(goodsUploadDir).resolve(filename).normalize();
+                if (!resolvedPath.startsWith(Paths.get(goodsUploadDir).normalize())) {
+                    logger.error("尝试访问非法路径: {}", resolvedPath);
+                    imagePathToDeleteOnFS = null;
+                }
+            } catch (Exception e) {
+                logger.error("处理图片路径时出错: {}", e.getMessage());
+                imagePathToDeleteOnFS = null;
+            }
         }
+
+        // 删除数据库记录
         boolean deletedFromDb = goodService.deleteGoodsById(goodId);
+
         if (deletedFromDb) {
             redirectAttributes.addFlashAttribute("successMessage", "商品 (ID: " + goodId + ") 状态已改变！");
             logger.info("商品 ID: {} 由管理员 {} 从数据库成功删除。", goodId, adminUser.getAccount());
+
+            // 删除关联的图片文件
             if (imagePathToDeleteOnFS != null) {
                 try {
                     Path path = Paths.get(imagePathToDeleteOnFS);
@@ -283,13 +308,16 @@ public class AdminController {
                     }
                 } catch (IOException e) {
                     logger.error("删除商品 ID {} 的图片文件 {} 时出错: {}", goodId, imagePathToDeleteOnFS, e.getMessage());
-                    redirectAttributes.addFlashAttribute("warningMessage", "商品记录已删除，但其关联的图片文件删除失败: " + e.getMessage());
+                    redirectAttributes.addFlashAttribute("warningMessage",
+                            "商品记录已删除，但其关联的图片文件删除失败: " + e.getMessage());
                 }
             }
         } else {
-            redirectAttributes.addFlashAttribute("errorMessage", "删除商品 (ID: " + goodId + ") 失败！商品可能不存在或发生数据库错误。");
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "删除商品 (ID: " + goodId + ") 失败！商品可能不存在或发生数据库错误。");
             logger.warn("管理员 {} 删除商品 ID: {} 失败。", adminUser.getAccount(), goodId);
         }
+
         return "redirect:/admin/goods/add";
     }
 

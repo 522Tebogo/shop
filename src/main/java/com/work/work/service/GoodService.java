@@ -10,6 +10,9 @@ public interface GoodService {
     List<Goods> getActiveGoods();
     List<Goods> getRandomGoods();
     Goods getGoodById(int goodid);
+    int countAllGoods();
+    List<Goods> getHotGoodsByPage(int offset, int pageSize);
+
     List<Goods> getAllGoods();
     public List<Goods> getGoodsByCategory(String category);
     public List<Goods> selectAll();

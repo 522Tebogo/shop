@@ -136,10 +136,10 @@
                     <a class="nav-link" href="/good/all"><i class="bi bi-grid"></i> 商品分类</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href=""><i class="bi bi-star"></i> 热卖商品</a>
+                    <a class="nav-link" href="/good/hot"><i class="bi bi-star"></i> 热卖商品</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="bi bi-gift"></i> 限时特惠</a>
+                    <a class="nav-link" href="/good/discount"><i class="bi bi-gift"></i> 限时特惠</a>
                 </li>
             </ul>
 

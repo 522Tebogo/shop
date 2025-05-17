@@ -35,6 +35,16 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
+    public int countAllGoods() {
+        return goodMapper.countAllGoods();
+    }
+
+    @Override
+    public List<Goods> getHotGoodsByPage(int offset, int pageSize) {
+        return goodMapper.getHotGoodsByPage(offset, pageSize);
+    }
+
+    @Override
     public List<Goods> getAllGoods() {
         return goodMapper.getAllGoods();
     }

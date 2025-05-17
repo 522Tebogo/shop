@@ -53,9 +53,12 @@ public interface UserService {
     User getUserByEmail(String email);
 
     /**
-     * 保存头像
+     * 保存用户头像
+     * @param file 头像文件
+     * @param session 当前会话
+     * @return 保存成功返回文件路径，失败返回null
      */
-    String saveAvatar(MultipartFile file) throws IOException;
+    String saveAvatar(MultipartFile file, HttpSession session);
 
     /**
      * 更新用户信息

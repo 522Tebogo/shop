@@ -19,7 +19,7 @@
         SELECT * FROM Goods WHERE is_out = 0
     </select>
     <select id="getGoodsByCategory" resultType="com.work.work.entity.Goods">
-        SELECT id, name, NormalPrice, SurprisePrice, imageUrl, description, category FROM Goods WHERE category = #{category} AND is_out=0
+        SELECT id, name, NormalPrice, SurprisePrice, imageUrl, description, category,sales FROM Goods WHERE category = #{category} AND is_out=0
     </select>
 
     <!-- 获取总记录数 -->
@@ -60,6 +60,19 @@
         WHERE id = #{id};
 
     </update>
+    <!-- 新增分页查询SQL -->
+    <select id="getHotGoodsByPage" resultType="com.work.work.entity.Goods">
+        SELECT * FROM goods
+        WHERE is_out = 0
+        ORDER BY sales DESC
+            LIMIT #{offset}, #{pageSize}
+    </select>
+    <select id="getDiscountGoodsByPage" resultType="com.work.work.entity.Goods">
+        SELECT * FROM goods
+        ORDER BY (surprise_price/normal_price) ASC
+            LIMIT #{offset}, #{pageSize}
+    </select>
+
     <select id="getCountById">
         SELECT stock FROM goods WHERE id = #{goodid}
     </select>
@@ -75,7 +88,9 @@
         WHERE id = #{goodid}
           AND (#{num} >= 0 OR stock + #{num} >= 0);
     </update>
-
+    <select id="countAllGoods" resultType="int">
+        SELECT COUNT(*) FROM goods
+    </select>
     <select id="getCountByDoubleId">
         SELECT num FROM wn_caritem WHERE userid  = #{userId} AND goodid= #{goodId} AND code IS NULL
     </select>

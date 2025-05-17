@@ -13,6 +13,8 @@ public interface GoodMapper {
     Goods getGoodById(int goodid);
     List<Goods> getAllGoods();
     List<Goods> getGoodsByCategory(String category);
+    int countAllGoods();
+    List<Goods> getHotGoodsByPage(int offset, int pageSize);
 
     List<Goods> selectAll();
     List<Goods> selectHot();

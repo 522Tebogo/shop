@@ -33,6 +33,7 @@ public class UserController {
     @Autowired
     private VerificationService verificationService;
 
+
     /**
      * 用户名密码登录页面
      */
@@ -344,26 +345,15 @@ public class UserController {
 
         // 处理头像上传
         if (avatar != null && !avatar.isEmpty()) {
-            String avatarPath = userService.saveAvatar(avatar);
+            String avatarPath = userService.saveAvatar(avatar, session);
             if (avatarPath != null) {
-                user.setAvatar(avatarPath);
-                if (userService.updateUserInfo(userId, userInfo, session)) {
-                    // 更新session中的用户信息
-                    session.setAttribute("user", user);
-                    return "success";
-                }
+                userInfo.put("avatar", avatarPath);
+            } else {
+                return "头像上传失败，请重试";
             }
         }
 
         if (userService.updateUserInfo(userId, userInfo, session)) {
-            // 更新session中的用户信息
-            if (nickname != null && !nickname.isEmpty()) {
-                user.setNickname(nickname);
-            }
-            if (account != null && !account.isEmpty() && !account.equals(user.getAccount())) {
-                user.setAccount(account);
-            }
-            session.setAttribute("user", user);
             return "success";
         } else {
             String errorMsg = (String) session.getAttribute("msg");

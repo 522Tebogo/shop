@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -288,7 +289,7 @@ public class UserServiceImpl implements UserService {
         // 处理头像上传
         String avatarPath = "";
         if (avatar != null && !avatar.isEmpty() && avatar.getSize() > 0) {
-            avatarPath = this.saveAvatar(avatar);
+            avatarPath = this.saveAvatar(avatar, session);
             if (avatarPath == null) { // 头像保存失败
                 session.setAttribute("msg", "头像上传失败，请重试");
                 return false;
@@ -383,7 +384,7 @@ public class UserServiceImpl implements UserService {
 
         String avatarPath = "";
         if (avatar != null && !avatar.isEmpty() && avatar.getSize() > 0) {
-            avatarPath = this.saveAvatar(avatar);
+            avatarPath = this.saveAvatar(avatar, null);
             if (avatarPath == null) { // 头像保存失败
                 logger.error("Avatar upload failed during user insertion for account: {}", account);
                 // 可以根据业务需求决定是否因为头像上传失败而中断注册
@@ -444,59 +445,76 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String saveAvatar(MultipartFile file) {
+    public String saveAvatar(MultipartFile file, HttpSession session) {
         if (file == null || file.isEmpty()) {
             logger.warn("Attempted to save null or empty avatar file.");
             return null;
         }
+
         try {
             // 检查文件类型是否为图片
             String contentType = file.getContentType();
             if (contentType == null || !contentType.startsWith("image/")) {
                 logger.warn("Invalid avatar file type: {}. Original filename: {}", contentType, file.getOriginalFilename());
-                return null; // 或者抛出自定义异常
+                return null;
             }
 
-            Path uploadPath = Paths.get(avatarUploadDir); // 使用配置的路径
+            // 检查文件大小（10MB）
+            long maxSize = 10 * 1024 * 1024; // 10MB
+            if (file.getSize() > maxSize) {
+                logger.warn("Avatar file too large: {} bytes. Original filename: {}", file.getSize(), file.getOriginalFilename());
+                return null;
+            }
 
+            // 获取文件扩展名
+            String originalFilename = file.getOriginalFilename();
+            String fileExtension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+                // 检查扩展名是否合法
+                if (!Arrays.asList(".jpg", ".jpeg", ".png", ".gif").contains(fileExtension)) {
+                    logger.warn("Invalid file extension: {}. Original filename: {}", fileExtension, originalFilename);
+                    return null;
+                }
+            } else {
+                logger.warn("No file extension found. Original filename: {}", originalFilename);
+                return null;
+            }
+
+            // 创建上传目录
+            Path uploadPath = Paths.get(avatarUploadDir);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
                 logger.info("Created avatar upload directory: {}", uploadPath.toAbsolutePath());
             }
 
-            String originalFilename = file.getOriginalFilename();
-            String fileExtension = "";
-            if (originalFilename != null && originalFilename.contains(".")) {
-                fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            }
-            // 使用UUID确保文件名唯一，保留原始扩展名
+            // 生成唯一文件名
             String uniqueFileName = UUID.randomUUID().toString() + fileExtension;
             Path filePath = uploadPath.resolve(uniqueFileName);
 
+            // 保存文件
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             logger.info("Avatar file saved successfully: {}. Original: {}", filePath.toAbsolutePath(), originalFilename);
 
-            // 返回相对于web应用的路径，假设avatarUploadDir配置的是一个可通过web访问的路径的父目录
-            // 例如，如果avatarUploadDir是 /opt/uploads/avatars，而web服务配置了 /uploads/avatars 映射到此目录
-            // 那么这里应该返回 /uploads/avatars/uniqueFileName
-            // 但目前代码中是 /static/images/avatars/
-            // 为了与现有代码逻辑保持一致，并假设 @Value 配置的 avatarUploadDir 对应的是磁盘绝对路径，
-            // 而前端访问路径是固定的 /static/images/avatars/
-            // 如果 avatarUploadDir 就是 "src/main/webapp/static/images/avatars" 则下面路径正确
-            if (avatarUploadDir.contains("webapp")) { // 简单判断是否在webapp下
-                String relativePath = avatarUploadDir.substring(avatarUploadDir.indexOf("webapp") + "webapp".length());
-                return relativePath.replace("\\", "/") + "/" + uniqueFileName; // 确保是 /
-            } else {
-                // 如果 avatarUploadDir 是外部路径，则需要配置一个Controller来提供图片服务
-                // 或者确保该外部路径被web服务器(如Nginx)映射到可访问的URL
-                // 暂时返回一个基于配置的值的假设性路径
-                // 这是一个需要根据实际部署情况调整的地方
-                logger.warn("Avatar saved to external path: {}. Ensure this path is web accessible or served via a controller.", filePath);
-                // 假设配置的路径已经是Web可访问路径的一部分，例如 /uploads/avatars/
-                // 这里的返回值需要非常小心，与前端如何访问图片紧密相关
-                // 根据原逻辑，返回/static/images/avatars/ + uniqueFileName
-                return "/static/images/avatars/" + uniqueFileName;
+            // 删除旧头像文件（如果存在且不是默认头像）
+            User currentUser = (User) session.getAttribute("user");
+            if (currentUser != null && currentUser.getAvatar() != null
+                    && !currentUser.getAvatar().equals("/static/images/default_avatar.png")) {
+                try {
+                    String oldAvatarPath = currentUser.getAvatar();
+                    if (oldAvatarPath.startsWith("/static/images/avatars/")) {
+                        String oldFileName = oldAvatarPath.substring(oldAvatarPath.lastIndexOf("/") + 1);
+                        Path oldFilePath = uploadPath.resolve(oldFileName);
+                        Files.deleteIfExists(oldFilePath);
+                        logger.info("Old avatar file deleted: {}", oldFilePath);
+                    }
+                } catch (Exception e) {
+                    logger.warn("Failed to delete old avatar file", e);
+                }
             }
+
+            // 返回相对路径
+            return "/static/images/avatars/" + uniqueFileName;
 
         } catch (IOException e) {
             logger.error("Failed to save avatar file. Original filename: {}", file.getOriginalFilename(), e);
@@ -506,7 +524,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public boolean updateUserInfo(Integer userId, Map<String, String> userInfo, HttpSession session) { // 移除了 IOException
+    public boolean updateUserInfo(Integer userId, Map<String, String> userInfo, HttpSession session) {
         if (userId == null || userInfo == null) {
             session.setAttribute("msg", "参数错误");
             return false;
@@ -523,8 +541,8 @@ public class UserServiceImpl implements UserService {
         // 更新昵称
         if (userInfo.containsKey("nickname")) {
             String nickname = userInfo.get("nickname");
-            if (nickname != null && !nickname.isEmpty() && !nickname.equals(userToUpdate.getNickname())) {
-                userToUpdate.setNickname(nickname);
+            if (nickname != null && !nickname.trim().isEmpty() && !nickname.equals(userToUpdate.getNickname())) {
+                userToUpdate.setNickname(nickname.trim());
                 changed = true;
             }
         }
@@ -532,7 +550,7 @@ public class UserServiceImpl implements UserService {
         // 更新用户名 (account)
         if (userInfo.containsKey("account")) {
             String newAccount = userInfo.get("account");
-            if (newAccount != null && !newAccount.isEmpty() && !newAccount.equals(userToUpdate.getAccount())) {
+            if (newAccount != null && !newAccount.trim().isEmpty() && !newAccount.equals(userToUpdate.getAccount())) {
                 // 验证新用户名格式
                 if (!isValidUsername(newAccount)) {
                     session.setAttribute("msg", "新用户名格式不正确");
@@ -544,24 +562,19 @@ public class UserServiceImpl implements UserService {
                     session.setAttribute("msg", "新用户名已存在");
                     return false;
                 }
-                userToUpdate.setAccount(newAccount);
+                userToUpdate.setAccount(newAccount.trim());
                 changed = true;
             }
         }
 
-        // 如果有头像更新的逻辑，应该在这里处理MultipartFile，并调用saveAvatar
-        // 例如:
-        // if (userInfo.containsKey("avatarFile") && userInfo.get("avatarFile") instanceof MultipartFile) {
-        //    MultipartFile avatarFile = (MultipartFile) userInfo.get("avatarFile");
-        //    String avatarPath = saveAvatar(avatarFile);
-        //    if (avatarPath != null) {
-        //        userToUpdate.setAvatar(avatarPath);
-        //        changed = true;
-        //    } else {
-        //        session.setAttribute("msg", "头像更新失败");
-        //        return false; // or continue without updating avatar
-        //    }
-        // }
+        // 更新头像路径
+        if (userInfo.containsKey("avatar")) {
+            String avatarPath = userInfo.get("avatar");
+            if (avatarPath != null && !avatarPath.isEmpty() && !avatarPath.equals(userToUpdate.getAvatar())) {
+                userToUpdate.setAvatar(avatarPath);
+                changed = true;
+            }
+        }
 
         if (changed) {
             int result = userMapper.updateUser(userToUpdate);
@@ -569,10 +582,10 @@ public class UserServiceImpl implements UserService {
                 logger.info("User info updated for ID: {}", userId);
                 // 更新session中的用户信息
                 User updatedUserFromSession = (User) session.getAttribute("user");
-                if(updatedUserFromSession != null && updatedUserFromSession.getId().equals(userId)){
-                    if (userInfo.containsKey("nickname") && userInfo.get("nickname") != null) updatedUserFromSession.setNickname(userToUpdate.getNickname());
-                    if (userInfo.containsKey("account") && userInfo.get("account") != null) updatedUserFromSession.setAccount(userToUpdate.getAccount());
-                    // if (new avatar path is set) updatedUserFromSession.setAvatar(newAvatarPath);
+                if (updatedUserFromSession != null && updatedUserFromSession.getId().equals(userId)) {
+                    if (userInfo.containsKey("nickname")) updatedUserFromSession.setNickname(userToUpdate.getNickname());
+                    if (userInfo.containsKey("account")) updatedUserFromSession.setAccount(userToUpdate.getAccount());
+                    if (userInfo.containsKey("avatar")) updatedUserFromSession.setAvatar(userToUpdate.getAvatar());
                     session.setAttribute("user", updatedUserFromSession);
                 }
                 return true;
@@ -581,10 +594,10 @@ public class UserServiceImpl implements UserService {
                 session.setAttribute("msg", "用户信息更新失败");
                 return false;
             }
-        } else {
-            logger.info("No changes to update for user ID: {}", userId);
-            return true; // 没有变化也视为成功（或者可以返回一个不同的状态码/消息）
         }
+
+        logger.info("No changes to update for user ID: {}", userId);
+        return true;
     }
 
 
@@ -604,7 +617,7 @@ public class UserServiceImpl implements UserService {
         // 获取用户信息 (应该从数据库获取最新信息，而不是session中的旧信息)
         User user = userMapper.getUserById(userId);
         if (user == null) {
-            session.setAttribute("msg", "用户不存在"); // 或者更通用的“操作失败”
+            session.setAttribute("msg", "用户不存在"); // 或者更通用的"操作失败"
             return false;
         }
 
