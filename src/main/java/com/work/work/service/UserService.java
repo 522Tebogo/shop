@@ -9,24 +9,15 @@ import java.util.Map;
 
 public interface UserService {
 
-    /**
-     * 用户名密码登录
-     */
     User login(String account, String password, HttpSession session);
 
-    /**
-     * 手机号验证码登录
-     */
+
     User loginByPhone(String phone, String code, HttpSession session);
 
-    /**
-     * 邮箱验证码登录
-     */
+
     User loginByEmail(String email, String code, HttpSession session);
 
-    /**
-     * 手机号验证码注册
-     */
+
     boolean registerByPhone(String phone, String code, String password, String account, MultipartFile avatar, HttpSession session) throws IOException;
 
     /**
@@ -85,4 +76,21 @@ public interface UserService {
      * 绑定/修改邮箱
      */
     boolean changeEmail(Integer userId, String newEmail, String code, HttpSession session);
+
+
+    boolean freezeUser(Integer userId);
+
+    boolean unfreezeUser(Integer userId);
+
+    boolean addToBlacklist(Integer userId); // 假设黑名单也是一种状态
+
+    boolean removeFromBlacklist(Integer userId);
+
+    boolean deleteUser(Integer userId); // 逻辑删除或物理删除
+
+    boolean upgradeUserToAdmin(Integer userId);// 升级用户为管理员
+
+    User getUserById(Integer userId);
+    boolean demoteAdminToUser(Integer userId); // 将管理员降级为普通用户
+
 }

@@ -15,28 +15,28 @@
         WHERE userid = #{userId} AND code is null
     </update>
 
-    <select id="getOrderListByUserId">
-        SELECT * from orders WHERE userid = #{userId}
+    <select id="getOrderListByUserId" resultType="com.work.work.entity.Order"> <!-- 建议添加 resultType -->
+        SELECT * from orders WHERE userid = #{userId} ORDER BY create_time DESC <!-- 建议添加排序 -->
     </select>
+
     <select id="getGoodsByOrderCode" parameterType="long" resultType="com.work.work.entity.Goods">
         SELECT goods.id, goods.name, goods.NormalPrice, goods.SurprisePrice, goods.imageUrl, goods.description, goods.category,wn_caritem.num
         FROM goods
                  INNER JOIN wn_caritem ON goods.id = wn_caritem.goodid
         WHERE wn_caritem.code = #{orderCode}
-
-
     </select>
 
-    <select id="getOrderByOrderCode">
-    SELECT * FROM orders WHERE order_code = #{orderCode}
+    <select id="getOrderByOrderCode" resultType="com.work.work.entity.Order"> <!-- 建议添加 resultType -->
+        SELECT * FROM orders WHERE order_code = #{orderCode}
     </select>
-    <delete id="deleteOrderAndItems">
-        DELETE orders, wn_caritem
-    FROM orders
-    LEFT JOIN wn_caritem ON orders.order_code = wn_caritem.code AND orders.userid = wn_caritem.userid
-    WHERE orders.order_code = #{orderCode} AND orders.userid = #{userId}
+
+    <delete id="deleteCarItemByCodeAndUserId">
+        DELETE FROM wn_caritem WHERE code = #{orderCode} AND userid = #{userId}
     </delete>
 
+    <delete id="deleteOrderByCodeAndUserId">
+        DELETE FROM orders WHERE order_code = #{orderCode} AND userid = #{userId}
+    </delete>
 
     <update id="updateCarItemQuantity">
         UPDATE wn_caritem
@@ -50,18 +50,32 @@
         WHERE order_code = #{orderCode}
     </update>
 
+    <!-- 修改这里的 id 以匹配 OrderMapper.java 中的方法名 -->
+    <select id="getAllOrdersForAdmin" resultType="com.work.work.entity.Order">
+        SELECT o.id,
+        o.userid AS userId,  <!-- 显式映射到驼峰命名的实体字段 -->
+        u.account AS userAccount,
+        o.order_code AS orderCode,
+        o.totalPrice,
+        o.create_time AS createTime,
+        o.status
+        FROM orders o
+        LEFT JOIN wn_user u ON o.userid = u.id
+        WHERE payed = 1<!-- 使用 LEFT JOIN 以防用户被删除但订单仍需显示 -->
+        ORDER BY o.create_time DESC
+    </select>
+    <select id="getCodeNum">
+        SELECT num FROM wn_caritem WHERE userid = #{userid} AND goodid = #{goodid} AND code  = #{orderCode}
+    </select>
+
     <select id="getGoodIdByCode">
         SELECT goodid FROM wn_caritem WHERE code = #{orderCode}
     </select>
-<select id="getCodeNum">
-    SELECT num FROM wn_caritem WHERE userid = #{userid} AND goodid = #{goodid} AND code  = #{orderCode}
-</select>
-
-<update id="updateOrderAddress">
-    UPDATE orders
-    SET address_id = #{addressId}, receiver = #{receiver}, phone = #{phone}, address = #{address}
-    WHERE order_code = #{orderCode}
-</update>
+    <update id="updateOrderStatus">
+        UPDATE orders
+        SET status = #{status}
+        WHERE order_code = #{orderCode}
+    </update>
     <select id="getPriceByCode">
         SELECT totalPrice FROM orders WHERE order_code = #{orderCode}
     </select>

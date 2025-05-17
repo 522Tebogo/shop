@@ -1,10 +1,12 @@
 package com.work.work.service;
 
 import com.work.work.entity.VerificationCode;
+import org.springframework.stereotype.Service;
 
 /**
  * 验证码服务接口
  */
+@Service
 public interface VerificationService {
     
     /**

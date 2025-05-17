@@ -50,9 +50,8 @@
         WHERE userid = #{userId} AND goodid = #{goodId} AND code = #{orderCode}
     </update>
 
-
     <delete id="removeById">
 
-    DELETE FROM wn_caritem WHERE userid = #{userId} AND goodid = #{goodId} AND code IS NULL
+    DELETE FROM wn_caritem WHERE userid = #{userId} AND goodid = #{goodId}
     </delete>
 </mapper>

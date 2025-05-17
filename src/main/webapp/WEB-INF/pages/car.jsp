@@ -156,23 +156,15 @@
 
 <div class="container mt-5">
     <h2 class="section-title">我的购物车</h2>
-    
+
     <!-- 添加返回按钮 -->
     <div class="d-flex justify-content-end mb-4">
         <a href="/" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left"></i> 返回首页
         </a>
     </div>
-    
-    <c:if test="${not empty msg}">
-        <div class="container mt-4">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                    ${msg}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        </div>
-    </c:if>
+
+
     <c:if test="${empty goods}">
         <div class="alert alert-info" role="alert">
             您的购物车空空如也，快去<a href="/" class="alert-link">首页</a>看看吧！
@@ -229,8 +221,8 @@
             </div>
             <div class="text-end mt-3">
                 <form id="checkoutForm" method="GET" action="/order/toOrder">
-                <div id="goodIdInputs"></div>
-                <button type="submit" class="btn btn-primary"><i class="bi bi-credit-card"></i> 去结算</button>
+                    <div id="goodIdInputs"></div>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-credit-card"></i> 去结算</button>
                 </form>
             </div>
         </div>

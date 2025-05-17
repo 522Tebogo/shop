@@ -211,29 +211,29 @@
                 }
             });
         });
-
+        
         // 表单提交
         $('#phoneForm').submit(function(e) {
             e.preventDefault();
-
+            
             const newPhone = $('#newPhone').val();
             const code = $('#code').val();
-
+            
             // 验证手机号格式
             if(!newPhone.match(/^1\d{10}$/)) {
                 showAlert('danger', '请输入正确的手机号码');
                 return;
             }
-
+            
             // 验证验证码
             if(!code.match(/^\d{6}$/)) {
                 showAlert('danger', '请输入6位数字验证码');
                 return;
             }
-
+            
             // 禁用提交按钮
             $('#submitBtn').prop('disabled', true);
-
+            
             // 发送AJAX请求
             $.ajax({
                 url: '/user/phone/change',
@@ -286,14 +286,14 @@
             btn.prop('disabled', false);
             btn.text('获取验证码');
         }
-
+        
         // 显示提示消息
         function showAlert(type, message) {
             $('#alertBox').removeClass('alert-success alert-danger alert-warning')
                 .addClass('alert-' + type)
                 .find('#alertMessage').text(message);
             $('#alertBox').fadeIn();
-
+            
             // 5秒后自动隐藏
             setTimeout(function() {
                 $('#alertBox').fadeOut();

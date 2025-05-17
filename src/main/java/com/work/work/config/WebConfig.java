@@ -13,6 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new MyInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns(
+                        "/admin/**",
                         "/user/login",
                         "/user/login/**",  // 排除所有登录相关子路径
                         "/user/register",

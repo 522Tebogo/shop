@@ -161,16 +161,14 @@
                         我的账户
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="/user/profile"><i class="bi bi-person"></i> 个人中心</a></li>
-                        <li><a class="dropdown-item" href="/car/toCar"><i class="bi bi-cart"></i> 购物车</a></li>
+                        <li><a class="dropdown-item" href="/user/profile"><i class="bi bi-person"></i> 个人资料</a></li>
+                        <li><a class="dropdown-item" href="/car/toCar"><i class="bi bi-person"></i>购物车</a></li>
                         <li><a class="dropdown-item" href="/order/getOrder"><i class="bi bi-basket"></i> 我的订单</a></li>
-                        <li><a class="dropdown-item" href="/invoice/list"><i class="bi bi-envelope"></i> 我的发票</a></li>
-                        <li><a class="dropdown-item" href="/address/list"><i class="bi bi-geo-alt"></i> 收货地址</a></li>
                         <li><a class="dropdown-item" href="/user/password"><i class="bi bi-key"></i> 修改密码</a></li>
                         <li><a class="dropdown-item" href="/user/phone"><i class="bi bi-phone"></i> 绑定手机</a></li>
                         <li><a class="dropdown-item" href="/user/email"><i class="bi bi-envelope"></i> 绑定邮箱</a></li>
-                        <li><hr class="dropdown-divider"></li>
 
+                        <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="/user/logout"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
                     </ul>
                 </div>

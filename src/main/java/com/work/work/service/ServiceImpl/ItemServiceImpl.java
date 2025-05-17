@@ -44,6 +44,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public void updateQuantitys(int userId, int goodId, long orderCode, int quantity) {
+        itemMapper.updateQuantitys(userId,goodId,orderCode,quantity);
+
+    }
+
+    @Override
     public int removeById(int userId, int goodId) {
         return itemMapper.removeById(userId,goodId);
     }
@@ -54,9 +60,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void updateQuantitys(int userId, int goodId, long orderCode, int quantity) {
-        itemMapper.updateQuantitys(userId,goodId,orderCode,quantity);
+    public Object getItemByCod(long orderCode) {
+        return itemMapper.getItemByCod(orderCode);
     }
-
 
 }

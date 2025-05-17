@@ -46,4 +46,16 @@ public interface UserMapper {
 
     // 更新邮箱
     int updateEmail(@Param("id") Integer id, @Param("email") String email);
+
+
+
+
+    List<User> getAllUser(); // <<--- 添加这个方法声明
+    User getUserById(Integer userId); // 根据ID获取用户，用于更新操作前查询
+
+    int updateUserStatus(User user); // 通用更新用户状态 (status 字段)
+
+    int updateUserLoginInfo(User user); // 更新最后登录时间和IP
+
+
 }

@@ -203,7 +203,7 @@
 
 <div class="container mt-5">
     <h2 class="section-title">订单确认</h2>
-    
+
     <!-- 显示错误消息 -->
     <c:if test="${not empty errorMsg}">
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -211,12 +211,12 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </c:if>
-    
+
     <!-- 收货地址 -->
     <div class="address-section">
         <h4><i class="bi bi-geo-alt-fill"></i> 收货地址</h4>
         <hr>
-        
+
         <c:choose>
             <c:when test="${empty addresses}">
                 <div class="no-address-alert">
@@ -234,14 +234,14 @@
                                 <c:if test="${address.isDefault}">
                                     <span class="default-badge">默认地址</span>
                                 </c:if>
-                                
+
                                 <h5><i class="bi bi-person-fill"></i> ${address.receiver}</h5>
                                 <p class="mb-1"><i class="bi bi-telephone-fill"></i> ${address.phone}</p>
                                 <p><i class="bi bi-geo-alt-fill"></i> ${address.province} ${address.city} ${address.district} ${address.detailAddress}</p>
                             </div>
                         </div>
                     </c:forEach>
-                    
+
                     <div class="col-md-6">
                         <a href="/address/add" class="text-decoration-none">
                             <div class="add-address-card">
@@ -257,12 +257,12 @@
             </c:otherwise>
         </c:choose>
     </div>
-    
+
     <!-- 订单商品列表 -->
     <div class="order-items">
         <h4><i class="bi bi-basket-fill"></i> 商品清单</h4>
         <hr>
-        
+
         <c:forEach var="item" items="${goods}">
             <div class="order-item">
                 <img src="${item.imageUrl}" alt="${item.name}">
@@ -277,7 +277,7 @@
             </div>
         </c:forEach>
     </div>
-    
+
     <!-- 订单总计 -->
     <c:set var="totalPrice" value="0" />
     <c:forEach var="item" items="${goods}">
@@ -286,7 +286,7 @@
     </c:forEach>
     <c:set var="shippingFee" value="${totalPrice * 0.02}" />
     <c:set var="finalTotal" value="${totalPrice + shippingFee}" />
-    
+
     <div class="order-total">
         <h4>订单总计</h4>
         <hr>
@@ -303,13 +303,13 @@
             <h5>应付总额:</h5>
             <h5 class="text-danger fw-bold">¥<fmt:formatNumber value="${finalTotal}" type="number" maxFractionDigits="2" minFractionDigits="2"/></h5>
         </div>
-        
+
         <form action="/order/submit" method="post" id="orderForm">
             <input type="hidden" name="userId" value="${user.id}">
             <input type="hidden" name="totalPrice" value="${finalTotal}">
             <input type="hidden" name="orderCode" value="${System.currentTimeMillis()}">
             <input type="hidden" name="addressId" id="selectedAddressId" value="${defaultAddress.id}">
-            
+
             <div class="text-end mt-3">
                 <a href="/car/toCar" class="btn btn-outline-secondary me-2">
                     <i class="bi bi-arrow-left"></i> 返回购物车
@@ -379,7 +379,7 @@
             const addressId = $(this).data('address-id');
             $('#selectedAddressId').val(addressId);
         });
-        
+
         // 提交订单前验证是否选择了地址
         $('#orderForm').submit(function(e) {
             const addressId = $('#selectedAddressId').val();

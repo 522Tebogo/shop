@@ -180,7 +180,7 @@
             <li><a href="<c:url value='/admin'/>" class="${pageContext.request.requestURI.endsWith('/admin') && !pageContext.request.requestURI.contains('/admin/') ? 'active' : ''}"><i class="bi bi-house-door-fill"></i> 管理首页</a></li>
             <li><a href="<c:url value='/admin/goods/add'/>" class="${pageContext.request.requestURI.contains('/admin/goods/add') ? 'active' : ''}"><i class="bi bi-plus-square-fill"></i> 商品管理</a></li>
             <li><a href="<c:url value='/admin/user/list'/>" class="${pageContext.request.requestURI.contains('/admin/user/list') ? 'active' : ''}"><i class="bi bi-people-fill"></i> 用户列表</a></li>
-                <li><a href="<c:url value='/admin/orders/manage'/>" class="${pageContext.request.requestURI.contains('/admin/orders/manage') ? 'active' : ''}"><i class="bi bi-truck"></i> 订单发货管理</a></li>
+            <li><a href="<c:url value='/admin/orders/manage'/>" class="${pageContext.request.requestURI.contains('/admin/orders/manage') ? 'active' : ''}"><i class="bi bi-truck"></i> 订单发货管理</a></li>
             <%-- 根据需要添加更多菜单项 --%>
         </ul>
         <div id="copyright">© 2024 嗨购后台</div>

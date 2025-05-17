@@ -110,7 +110,6 @@
             color: white;
         }
         .login-type-nav {
-            width: 500px;
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
@@ -124,6 +123,36 @@
             font-weight: 500;
         }
         .login-type-nav a.active {
+            background-color: #5d6bdf;
+            color: white;
+        }
+        /* 用户/管理员切换按钮样式 */
+        .user-type-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        .user-type-toggle .toggle-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border: 1px solid #5d6bdf;
+            color: #5d6bdf;
+            background-color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .user-type-toggle .toggle-btn:first-child {
+            border-top-left-radius: 25px;
+            border-bottom-left-radius: 25px;
+            border-right: none;
+        }
+        .user-type-toggle .toggle-btn:last-child {
+            border-top-right-radius: 25px;
+            border-bottom-right-radius: 25px;
+            border-left: none;
+        }
+        .user-type-toggle .toggle-btn.active {
             background-color: #5d6bdf;
             color: white;
         }
@@ -142,28 +171,20 @@
         </div>
 
         <div class="login-header">
-            <h2>用户登录</h2>
+            <h2 id="loginTitle">用户登录</h2>
             <p class="text-muted">欢迎回来！请输入您的账号信息</p>
         </div>
 
-        <div class="login-type-nav">
+        <!-- 用户/管理员切换按钮 -->
+        <div class="user-type-toggle">
+            <button class="toggle-btn active" id="userToggle">用户登录</button>
+            <button class="toggle-btn" id="adminToggle">管理员登录</button>
+        </div>
+
+        <div class="login-type-nav" id="userLoginNav">
             <a href="/user/login" class="active">账号密码登录</a>
             <a href="/user/login/phone">手机验证码登录</a>
             <a href="/user/login/email">邮箱验证码登录</a>
-        </div>
-
-        <!-- 用户/管理员切换 -->
-        <div class="text-center mb-4">
-            <div class="btn-group" role="group">
-                <input type="radio" class="btn-check" name="role" id="userRole" value="user" checked>
-                <label class="btn btn-outline-primary" for="userRole">
-                    <i class="bi bi-person"></i> 用户登录
-                </label>
-                <input type="radio" class="btn-check" name="role" id="adminRole" value="admin">
-                <label class="btn btn-outline-primary" for="adminRole">
-                    <i class="bi bi-shield-lock"></i> 管理员登录
-                </label>
-            </div>
         </div>
 
         <!-- 显示成功消息 -->
@@ -204,9 +225,30 @@
             </button>
         </form>
 
-        <div class="login-footer">
+
+        <form action="/admin/login" method="post" id="adminLoginForm" style="display: none;">
+            <div class="mb-3">
+                <label for="adminAccount" class="form-label">管理员账号</label>
+                <input type="text" class="form-control" id="adminAccount" name="account" placeholder="请输入管理员账号" required value="${param.account_admin}">
+            </div>
+
+            <div class="mb-3">
+                <label for="adminPassword" class="form-label">管理员密码</label>
+                <input type="password" class="form-control" id="adminPassword" name="password" placeholder="请输入管理员密码" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-shield-lock-fill me-2"></i> 管理员登录
+            </button>
+        </form>
+
+        <div class="login-footer" id="userFooter">
             <p>还没有账号？<a href="/user/register">立即注册</a></p>
             <p class="mt-3"><small class="text-muted">登录即表示您同意我们的服务条款和隐私政策</small></p>
+        </div>
+
+        <div class="login-footer" id="adminFooter" style="display: none;">
+            <p><small class="text-muted">管理员登录仅限授权人员</small></p>
         </div>
     </div>
 </div>
@@ -220,28 +262,31 @@
             const href = $(this).attr('href');
             window.location.href = href;
         });
-    });
 
-    // 角色切换
-    document.addEventListener('DOMContentLoaded', function() {
-        const userRole = document.getElementById('userRole');
-        const adminRole = document.getElementById('adminRole');
-        const loginForm = document.getElementById('userLoginForm');
-
-        // 切换角色
-        userRole.addEventListener('change', function() {
-            if(this.checked) {
-                loginForm.action = '/user/login';
-                document.querySelector('.login-header h2').textContent = '用户登录';
-            }
+        // 用户/管理员切换功能
+        $('#userToggle').click(function() {
+            $(this).addClass('active');
+            $('#adminToggle').removeClass('active');
+            $('#loginTitle').text('用户登录');
+            $('#userLoginForm').show();
+            $('#adminLoginForm').hide();
+            $('#userLoginNav').show();
+            $('#userFooter').show();
+            $('#adminFooter').hide();
         });
 
-        adminRole.addEventListener('change', function() {
-            if(this.checked) {
-                loginForm.action = '/admin/login';
-                document.querySelector('.login-header h2').textContent = '管理员登录';
-            }
+        $('#adminToggle').click(function() {
+            $(this).addClass('active');
+            $('#userToggle').removeClass('active');
+            $('#loginTitle').text('管理员登录');
+            $('#userLoginForm').hide();
+            $('#adminLoginForm').show();
+            $('#userLoginNav').hide();
+            $('#userFooter').hide();
+            $('#adminFooter').show();
         });
+
+
     });
 </script>
 </body>

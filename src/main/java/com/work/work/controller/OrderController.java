@@ -23,26 +23,19 @@ import java.util.Map;
 @RequestMapping("/order")
 public class OrderController {
     @Autowired
+    AddressService addressService;
+    @Autowired
     GoodService goodService;
     @Autowired
     ItemService itemService;
-    @Autowired
-    private AddressService addressService;
-    
     @GetMapping("/toOrder")
     public String toOrder(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/user/login";
-        }
-        
         List<Goods> goods = itemService.getGoodsByUserId(user.getId());
-        
         // 获取用户的收货地址列表
         List<Address> addresses = addressService.getAddressByUserId(user.getId());
         // 获取默认地址
         Address defaultAddress = addressService.getDefaultAddress(user.getId());
-        
         model.addAttribute("goods", goods);
         model.addAttribute("addresses", addresses);
         model.addAttribute("defaultAddress", defaultAddress);
@@ -61,7 +54,7 @@ public class OrderController {
                               @RequestParam(value = "addressId", required = false) Integer addressId,
                               Model model) {
         User user = (User) session.getAttribute("user");
-        
+
         // 处理收货地址
         Address address = null;
         if (addressId != null) {
@@ -70,7 +63,7 @@ public class OrderController {
             // 如果没有指定地址，尝试获取默认地址
             address = addressService.getDefaultAddress(userId);
         }
-        
+
         // 如果没有地址，跳转回订单确认页面
         if (address == null) {
             model.addAttribute("errorMsg", "请选择收货地址");
@@ -80,7 +73,7 @@ public class OrderController {
             model.addAttribute("addresses", addresses);
             return "order_sure";
         }
-        
+
         // 保存订单
         System.out.println("到了确认controller");
         boolean success = orderService.createOrder(userId, totalPrice, orderCode, address, session);
@@ -123,7 +116,6 @@ public class OrderController {
 
 
 
-
     @GetMapping("/delete/{orderCode}")
     public String deleteOrderByCode(HttpSession session, @PathVariable("orderCode") long orderCode,Model model) {
         System.out.println("删除中");
@@ -161,23 +153,10 @@ public class OrderController {
 
     }
     @GetMapping("/edit/{orderCode}")
-    public String showEditPage(@PathVariable(name =  "orderCode") long orderCode, HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/user/login";
-        }
-        
+    public String showEditPage(@PathVariable(name =  "orderCode") long orderCode, Model model) {
         List<Goods> goods = orderService.getGoodsByOrderCode(orderCode);
-        Order order = orderService.getOrderByOrderCode(orderCode);
-        
-        // 获取用户的收货地址列表
-        List<Address> addresses = addressService.getAddressByUserId(user.getId());
-        
         model.addAttribute("goods", goods);
         model.addAttribute("orderCode", orderCode);
-        model.addAttribute("order", order);
-        model.addAttribute("addresses", addresses);
-        
         return "order_edit"; // 你的 JSP 页面名
     }
 
@@ -185,23 +164,10 @@ public class OrderController {
     public String updateOrder(@RequestParam("orderCode") long orderCode,
                               @RequestParam("goodsId") List<Integer> goodsIds,
                               @RequestParam("nums") List<Integer> nums,
-                              @RequestParam(value = "addressId", required = false) Integer addressId,
-                              HttpSession session, Model model) {
-
+                              HttpSession session,Model model) {
         System.out.println("商品数量:"+nums);
         User user = (User) session.getAttribute("user");
         int userId = user.getId();
-        
-        // 处理收货地址
-        if (addressId != null) {
-            Address address = addressService.getAddressById(addressId);
-            if (address != null) {
-                orderService.updateOrderAddress(orderCode, addressId, address.getReceiver(), 
-                    address.getPhone(), address.getProvince() + address.getCity() + 
-                    address.getDistrict() + address.getDetailAddress());
-            }
-        }
-        
         // 调用服务层更新购物车和订单信息
         orderService.updateOrder(orderCode, userId, goodsIds, nums);
         System.out.println("更新成功");
@@ -218,7 +184,6 @@ public class OrderController {
         // 更新成功后跳转到订单列表页
         return "order_list";
     }
-
     @PostMapping("/pay/now")
     @ResponseBody
     public String payOrder(long orderCode,HttpSession session) {

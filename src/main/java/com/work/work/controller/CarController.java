@@ -4,7 +4,6 @@ import com.work.work.entity.Goods;
 import com.work.work.entity.User;
 import com.work.work.service.GoodService;
 import com.work.work.service.ItemService;
-import com.work.work.service.OrderService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,19 +21,13 @@ public class CarController {
     GoodService goodService;
     @Autowired
     ItemService itemService;
-    @Autowired
-    OrderService orderService;
 
     @GetMapping("/toCar")
     public String toCar(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/user/login";
-        }
         List<Goods> goods = itemService.getGoodsByUserId(user.getId());
         System.out.println("这是购物车信息:"+goods);
         model.addAttribute("goods", goods);
-        model.addAttribute("msg", null);
         return "car";
     }
 
@@ -45,7 +38,7 @@ public class CarController {
         if(user == null) {
             return "redirect:/user/login";
         }
-        
+
         String msg = null;
         int count = goodService.getCountById(goodId);
         int out = goodService.getOutByGoodId(goodId);
@@ -80,7 +73,7 @@ public class CarController {
             }
         }
         else{
-                itemService.addNum(userid,goodId,num);
+            itemService.addNum(userid,goodId,num);
             List<Goods> goods = itemService.getGoodsByUserId(user.getId());
             model.addAttribute("goods", goods);
 
@@ -90,12 +83,12 @@ public class CarController {
     }
 
     public boolean isSingle(int userid,int goodId) {
-            List<Goods> goods = itemService.isSingle(userid,goodId);
-            if (goods.size()>0) {
-                return false;
-            }
-            else
-                return true;
+        List<Goods> goods = itemService.isSingle(userid,goodId);
+        if (goods.size()>0) {
+            return false;
+        }
+        else
+            return true;
     }
     @PostMapping("/updateQuantity")
     @ResponseBody

@@ -1,6 +1,7 @@
 package com.work.work.entity;
 
 import lombok.Data;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -8,6 +9,7 @@ import java.util.Date;
 
 @Data
 public class User {
+    @Getter
     private Integer id;
     private String account;
     private String password;
@@ -117,7 +119,7 @@ public class User {
     public void setLastLoginIp(String lastLoginIp) {
         this.lastLoginIp = lastLoginIp;
     }
-    
+
     public String getNickname() {
         return nickname;
     }
