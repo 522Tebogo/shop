@@ -7,6 +7,7 @@ import java.util.List;
 
 @Service
 public interface GoodService {
+    List<Goods> getActiveGoods();
     List<Goods> getRandomGoods();
     Goods getGoodById(int goodid);
     List<Goods> getAllGoods();

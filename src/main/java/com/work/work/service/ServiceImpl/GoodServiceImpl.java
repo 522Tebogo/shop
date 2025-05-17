@@ -20,6 +20,11 @@ public class GoodServiceImpl implements GoodService {
     GoodMapper goodMapper;
 
     @Override
+    public List<Goods> getActiveGoods() {
+        return goodMapper.getActiveGoods();
+    }
+
+    @Override
     public List<Goods> getRandomGoods() {
         return goodMapper.getRandomGoods();
     }

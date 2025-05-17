@@ -34,7 +34,7 @@ public class GoodController {
         if (category != null && !category.isEmpty()) {
             goods = goodService.getGoodsByCategory(category);
         } else {
-            goods = goodService.getAllGoods();
+            goods = goodService.getActiveGoods();
         }
         model.addAttribute("goods", goods);
         model.addAttribute("category", category);

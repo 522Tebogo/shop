@@ -152,6 +152,9 @@ public class AdminController {
         }
         model.addAttribute("goods", goodsInstance);
         List<Goods> goodsList = goodService.getAllGoods();
+        for (Goods goods : goodsList) {
+            System.out.println("当前商品的状态为:"+goods.getIsOut());
+        }
         model.addAttribute("goodsList", goodsList);
         logger.info("管理员 {} 访问了商品添加/列表页面。", adminUser.getAccount());
         return "goods_add";
@@ -267,7 +270,7 @@ public class AdminController {
         }
         boolean deletedFromDb = goodService.deleteGoodsById(goodId);
         if (deletedFromDb) {
-            redirectAttributes.addFlashAttribute("successMessage", "商品 (ID: " + goodId + ") 已成功从数据库删除！");
+            redirectAttributes.addFlashAttribute("successMessage", "商品 (ID: " + goodId + ") 状态已改变！");
             logger.info("商品 ID: {} 由管理员 {} 从数据库成功删除。", goodId, adminUser.getAccount());
             if (imagePathToDeleteOnFS != null) {
                 try {

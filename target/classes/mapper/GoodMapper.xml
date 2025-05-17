@@ -5,7 +5,7 @@
 <mapper namespace="com.work.work.mapper.GoodMapper">
 
     <select id="getRandomGoods" resultType="com.work.work.entity.Goods">
-        SELECT id, name, NormalPrice, SurprisePrice, imageUrl, description, category FROM Goods ORDER BY RAND() LIMIT 4;
+        SELECT id, name, NormalPrice, SurprisePrice, imageUrl, description, category FROM Goods WHERE is_out=0 ORDER BY RAND() LIMIT 4;
     </select>
     <select id="getGoodById" resultType="com.work.work.entity.Goods">
         SELECT id, name, NormalPrice, SurprisePrice, imageUrl, description, category FROM Goods WHERE id = #{goodid}
@@ -13,10 +13,13 @@
 
     <!-- 假设 getAllGoods 和 getGoodsByCategory 也应该从 Goods 表查询 -->
     <select id="getAllGoods" resultType="com.work.work.entity.Goods">
-        SELECT id, name, NormalPrice, SurprisePrice, imageUrl, description, category FROM Goods
+        SELECT * FROM Goods
+    </select>
+    <select id="getActiveGoods" resultType="com.work.work.entity.Goods">
+        SELECT * FROM Goods WHERE is_out = 0
     </select>
     <select id="getGoodsByCategory" resultType="com.work.work.entity.Goods">
-        SELECT id, name, NormalPrice, SurprisePrice, imageUrl, description, category FROM Goods WHERE category = #{category}
+        SELECT id, name, NormalPrice, SurprisePrice, imageUrl, description, category FROM Goods WHERE category = #{category} AND is_out=0
     </select>
 
     <!-- 获取总记录数 -->
@@ -51,9 +54,12 @@
                当前这个 insert 语句只针对 Goods 表的现有列。
         -->
     </insert>
-    <delete id="deleteGoodsById">
-        DELETE FROM Goods WHERE id = #{id}
-    </delete>
+    <update id="deleteGoodsById">
+        UPDATE goods
+        SET is_out = CASE WHEN is_out = 1 THEN 0 ELSE 1 END
+        WHERE id = #{id};
+
+    </update>
     <select id="getCountById">
         SELECT stock FROM goods WHERE id = #{goodid}
     </select>
@@ -80,4 +86,5 @@
     <select id="getOutByGoodId">
         SELECT is_out FROM goods WHERE id = #{goodid}
     </select>
+
 </mapper>

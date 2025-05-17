@@ -8,6 +8,7 @@ import java.util.List;
 
 @Mapper
 public interface GoodMapper {
+    List<Goods> getActiveGoods();
     List<Goods> getRandomGoods();
     Goods getGoodById(int goodid);
     List<Goods> getAllGoods();

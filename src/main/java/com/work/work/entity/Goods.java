@@ -15,7 +15,7 @@ public class Goods {
     private String imageUrl;    // 对应数据库 imageUrl
     private String description; // 对应数据库 description
     private String category;    // 对应数据库 category (VARCHAR) - 这是我们将使用的字段
-    private int is_out;
+    private int isOut;
     // 下面这些字段在截图的 Goods 表中目前不存在，但在 GoodMapper.xml 的 insertGoods 中被引用
     // 如果您的 Goods 表确实没有这些列，那么 insertGoods 语句需要调整
     private int num;            // 数据库中没有 num 列，除非您有其他用途

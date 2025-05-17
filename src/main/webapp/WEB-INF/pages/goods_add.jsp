@@ -265,9 +265,18 @@
                             <td><fmt:formatNumber value="${goodItem.surprisePrice}" type="currency" currencySymbol="¥"/></td>
 <%--                            <td>${not empty goodItem.stock ? goodItem.stock : 'N/A'}</td>--%>
                             <td class="action-buttons-list">
-                                <a href="<c:url value='/admin/goods/delete/${goodItem.id}'/>" class="btn btn-sm btn-danger delete-good-btn-list"><i class="bi bi-trash3"></i> 删除</a>
-                                    <%-- 可以添加编辑按钮等 --%>
-                                    <%-- <a href="#" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil-square"></i> 编辑</a> --%>
+                                <c:choose>
+                                    <c:when test="${goodItem.isOut == 0}">
+                                        <a href="<c:url value='/admin/goods/delete/${goodItem.id}'/>" class="btn btn-sm btn-warning">
+                                            <i class="bi bi-box-arrow-down"></i> 下架
+                                        </a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="<c:url value='/admin/goods/delete/${goodItem.id}'/>" class="btn btn-sm btn-success">
+                                            <i class="bi bi-box-arrow-up"></i> 上架
+                                        </a>
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
                         </tr>
                     </c:forEach>
