@@ -166,5 +166,13 @@ public class Goods {
     public void setSaleTime(Date saleTime) {
         this.saleTime = saleTime;
     }
+
+    public int getIsOut() {
+        return isOut;
+    }
+
+    public void setIsOut(int isOut) {
+        this.isOut = isOut;
+    }
 }
 

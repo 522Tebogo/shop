@@ -6,6 +6,14 @@ import java.util.Date;
 
 @Data
 public class Address {
+    public Boolean getDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(Boolean aDefault) {
+        isDefault = aDefault;
+    }
+
     private Integer id;
     private Integer userId;
     private String receiver; // 收件人姓名

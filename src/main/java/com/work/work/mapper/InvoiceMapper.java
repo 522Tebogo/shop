@@ -9,7 +9,11 @@ import java.util.List;
 public interface InvoiceMapper {
     int insertInvoice(Invoice invoice);
 
-    List<Invoice> getInvoiceListByUserId(int userId);
+    List<Invoice> selectAllInvoices();
+
+    List<Invoice> selectByUserId(Integer userId);
+
+    List<Invoice> searchAllInvoices(Long invoiceNumber, Long orderCode);
 
     List<Invoice> searchInvoices(Long invoiceNumber, Long orderCode, Integer userId);
 

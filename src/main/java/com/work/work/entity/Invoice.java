@@ -3,7 +3,25 @@ package com.work.work.entity;
 import java.util.Date;
 
 public class Invoice {
+    @Override
+    public String toString() {
+        return "Invoice{" +
+                "id=" + id +
+                ", userName='" + userName + '\'' +
+                ", invoiceNumber=" + invoiceNumber +
+                ", orderCode=" + orderCode +
+                ", userId=" + userId +
+                ", title='" + title + '\'' +
+                ", taxNumber='" + taxNumber + '\'' +
+                ", amount=" + amount +
+                ", status=" + status +
+                ", createTime=" + createTime +
+                ", updateTime=" + updateTime +
+                '}';
+    }
+
     private int id;
+    private String userName;
     private long invoiceNumber; // 发票号码
     private long orderCode;     // 关联的订单号
     private int userId;        // 用户ID
@@ -13,6 +31,14 @@ public class Invoice {
     private int status;        // 状态：0-未开具，1-已开具，2-已删除
     private Date createTime;   // 创建时间
     private Date updateTime;   // 更新时间
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     // Getters and Setters
     public int getId() {

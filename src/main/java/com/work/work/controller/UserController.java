@@ -47,6 +47,8 @@ public class UserController {
      */
     @PostMapping("/login")
     public String login(@RequestParam String account, @RequestParam String password, HttpSession session,Model model, RedirectAttributes redirectAttributes) {
+        session.setAttribute("user_role","");
+        System.out.println("Is here");
         User user = userService.login(account, password, session);
 
         if (user != null) {

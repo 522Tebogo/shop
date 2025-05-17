@@ -13,7 +13,7 @@
 
     <!-- 假设 getAllGoods 和 getGoodsByCategory 也应该从 Goods 表查询 -->
     <select id="getAllGoods" resultType="com.work.work.entity.Goods">
-        SELECT * FROM Goods
+        SELECT * FROM Goods WHERE is_out =0
     </select>
     <select id="getActiveGoods" resultType="com.work.work.entity.Goods">
         SELECT * FROM Goods WHERE is_out = 0

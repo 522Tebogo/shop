@@ -9,6 +9,7 @@ import java.util.Date;
 
 @Data
 public class User {
+
     @Getter
     private Integer id;
     private String account;
@@ -23,7 +24,11 @@ public class User {
     private Date lastLoginTime;
     private String lastLoginIp;
     private String nickname;
+    private String role;
 
+    public boolean isAdmin(){
+        return "admin".equals(this.role);
+    }
     public Integer getId() {
         return id;
     }

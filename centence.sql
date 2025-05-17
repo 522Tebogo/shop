@@ -29,7 +29,8 @@ create table goods
     description   varchar(255)     not null,
     category      varchar(100)     not null,
     stock         int default 1000 not null,
-    is_out        tinyint(1)       not null
+    is_out        tinyint(1)       not null,
+    sales         int default 0    null
 );
 
 create table orders

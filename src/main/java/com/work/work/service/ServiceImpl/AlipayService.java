@@ -22,8 +22,7 @@ public class AlipayService {
        */
     public String createPayment(long orderNo, String totalAmount, String subject) {
   try {
-    log.info("开始创建支付订单，订单号：{}，金额：{}，商品：{}", orderNo, totalAmount,
-                    subject);
+
  
     // 创建支付请求
     AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
@@ -42,16 +41,13 @@ public class AlipayService {
       "\"product_code\":\"FAST_INSTANT_TRADE_PAY\"" + // 固定值
       "}";
  
-    log.info("支付请求参数：{}", bizContent);
- 
+
     request.setBizContent(bizContent);
 
     // 使用GET方式获取支付表单
     String form = alipayClient.pageExecute(request, "GET").getBody();
-    log.info("支付表单生成成功");
     return form;
    } catch (Exception e) {
-    log.error("创建支付订单失败", e);
     throw new RuntimeException("创建支付订单失败：" + e.getMessage());
    }
     }

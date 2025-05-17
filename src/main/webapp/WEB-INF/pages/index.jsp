@@ -114,7 +114,15 @@
             justify-content: center;
             color: #666;
             font-weight: bold;
+            overflow: hidden;
         }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;  /* 保持图片比例并且填充容器 */
+        }
+
     </style>
 </head>
 <body>
@@ -164,6 +172,8 @@
                         <li><a class="dropdown-item" href="/user/profile"><i class="bi bi-person"></i> 个人资料</a></li>
                         <li><a class="dropdown-item" href="/car/toCar"><i class="bi bi-person"></i>购物车</a></li>
                         <li><a class="dropdown-item" href="/order/getOrder"><i class="bi bi-basket"></i> 我的订单</a></li>
+                        <li><a class="dropdown-item" href="/invoice/list"><i class="bi bi-basket"></i> 我的发票</a></li>
+
                         <li><a class="dropdown-item" href="/user/password"><i class="bi bi-key"></i> 修改密码</a></li>
                         <li><a class="dropdown-item" href="/user/phone"><i class="bi bi-phone"></i> 绑定手机</a></li>
                         <li><a class="dropdown-item" href="/user/email"><i class="bi bi-envelope"></i> 绑定邮箱</a></li>

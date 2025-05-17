@@ -18,6 +18,47 @@ public class Order {
     private String status;
     private String userAccount; // <--- 新增这个属性
     private int payed;
+
+    public Integer getAddressId() {
+        return addressId;
+    }
+
+    public void setAddressId(Integer addressId) {
+        this.addressId = addressId;
+    }
+
+    public String getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public int getPayed() {
+        return payed;
+    }
+
+    public void setPayed(int payed) {
+        this.payed = payed;
+    }
+
     // 如果没有用 Lombok，你需要手动添加 getter 和 setter 方法:
     public String getUserAccount() {
         return userAccount;

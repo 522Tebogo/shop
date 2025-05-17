@@ -1,5 +1,6 @@
 package com.work.work.controller;
 
+import com.work.work.entity.Admin;
 import com.work.work.entity.Invoice;
 import com.work.work.entity.Order;
 import com.work.work.entity.User;
@@ -27,19 +28,15 @@ public class InvoiceController {
     public String checkInvoiceByOrderCode(@PathVariable long orderCode, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            // 未登录，跳转登录页或订单页
             return "redirect:/login";
         }
 
-        // 查找该用户该订单的发票列表（包含已开具和未开具）
         List<Invoice> invoices = invoiceService.searchInvoices(null, orderCode, user.getId());
 
         if (invoices != null && !invoices.isEmpty()) {
-            // 假设一订单只有一张发票，取第一张发票跳转详情
             Invoice invoice = invoices.get(0);
             return "redirect:/invoice/detail/" + invoice.getId();
         } else {
-            // 没有发票，跳转创建发票页面
             return "redirect:/invoice/toCreate/" + orderCode;
         }
     }
@@ -75,10 +72,29 @@ public class InvoiceController {
 
     // 发票列表
     @GetMapping("/list")
-    public String invoiceList(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        List<Invoice> invoiceList = invoiceService.getInvoiceList(user.getId());
-        model.addAttribute("invoiceList", invoiceList);
+    public String listInvoices(HttpSession session, Model model) {
+        Object currentUser = session.getAttribute("user");
+        if (currentUser == null) {
+            currentUser = session.getAttribute("admin");
+            if (currentUser == null) {
+                return "redirect:/login";
+            }
+        }
+
+        System.out.println("当前状态是："+session.getAttribute("user_role"));
+        List<Invoice> invoices;
+        boolean isAdmin = false;
+
+        if (session.getAttribute("user_role").equals("ADMIN")) {
+            invoices = invoiceService.getAllInvoices();
+            isAdmin = true;
+        } else {
+            User user = (User) currentUser;
+            invoices = invoiceService.getInvoicesByUserId(user.getId());
+        }
+        System.out.println("invoices : "+invoices);
+        model.addAttribute("invoices", invoices);
+        model.addAttribute("isAdmin", isAdmin);
         return "invoice_list";
     }
 
@@ -87,23 +103,53 @@ public class InvoiceController {
     public String searchInvoices(@RequestParam(required = false) Long invoiceNumber,
                                  @RequestParam(required = false) Long orderCode,
                                  HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
-        List<Invoice> invoiceList = invoiceService.searchInvoices(invoiceNumber, orderCode, user.getId());
+        Object currentUser = session.getAttribute("user");
+        if (currentUser == null) {
+            currentUser = session.getAttribute("admin");
+            if (currentUser == null) {
+                return "redirect:/login";
+            }
+        }
+
+        List<Invoice> invoiceList;
+        boolean isAdmin = false;
+
+        if (currentUser instanceof Admin) {
+            invoiceList = invoiceService.searchAllInvoices(invoiceNumber, orderCode);
+            isAdmin = true;
+        } else {
+            User user = (User) currentUser;
+            invoiceList = invoiceService.searchInvoices(invoiceNumber, orderCode, user.getId());
+        }
+
         model.addAttribute("invoiceList", invoiceList);
+        model.addAttribute("isAdmin", isAdmin);
         return "invoice_list";
     }
 
     // 查看发票详情
     @GetMapping("/detail/{id}")
     public String invoiceDetail(@PathVariable int id, HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
+        Object currentUser = session.getAttribute("user");
+        boolean isAdmin = false;
+
+        if (currentUser == null) {
+            currentUser = session.getAttribute("admin");
+            if (currentUser == null) {
+                return "redirect:/login";
+            }
+            isAdmin = true;
+        }
+
         Invoice invoice = invoiceService.getInvoiceById(id);
 
-        if (invoice == null || invoice.getUserId() != user.getId()) {
+        // 管理员可以查看所有发票，用户只能查看自己的
+        if (invoice == null || (!isAdmin && invoice.getUserId() != ((User)currentUser).getId())) {
             return "redirect:/invoice/list";
         }
 
         model.addAttribute("invoice", invoice);
+        model.addAttribute("isAdmin", isAdmin);
         return "invoice_detail";
     }
 
@@ -111,6 +157,10 @@ public class InvoiceController {
     @GetMapping("/toEdit/{id}")
     public String toEditInvoice(@PathVariable int id, HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
         Invoice invoice = invoiceService.getInvoiceById(id);
 
         if (invoice == null || invoice.getUserId() != user.getId() || invoice.getStatus() != 0) {
@@ -125,6 +175,10 @@ public class InvoiceController {
     @PostMapping("/update")
     public String updateInvoice(HttpSession session, Invoice invoice, Model model) {
         User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
         invoice.setUserId(user.getId());
 
         boolean success = invoiceService.updateInvoice(invoice);
@@ -139,6 +193,10 @@ public class InvoiceController {
     @GetMapping("/delete/{id}")
     public String deleteInvoice(@PathVariable int id, HttpSession session) {
         User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
         Invoice invoice = invoiceService.getInvoiceById(id);
 
         if (invoice != null && invoice.getUserId() == user.getId()) {
@@ -148,16 +206,37 @@ public class InvoiceController {
         return "redirect:/invoice/list";
     }
 
-    // 开具发票
-    @GetMapping("/issue/{id}")
-    public String issueInvoice(@PathVariable int id, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        Invoice invoice = invoiceService.getInvoiceById(id);
+    // 开具发票（管理员专用）
+    @GetMapping("/admin/issue/{id}")
+    public String adminIssueInvoice(@PathVariable int id, HttpSession session) {
+        System.out.println("here");
+        String admin = (String) session.getAttribute("user_role");
+                System.out.println("admin:"+admin);
+        if (admin == null) {
+            return "redirect:/admin/login";
+        }
+        invoiceService.issueInvoice(id);
+        System.out.println("logic success");
+        return "redirect:/invoice/admin/detail/"+id;
+    }
 
-        if (invoice != null && invoice.getUserId() == user.getId()) {
-            invoiceService.issueInvoice(id);
+    // 管理员查看发票详情
+    @GetMapping("/admin/detail/{id}")
+    public String adminInvoiceDetail(@PathVariable int id, HttpSession session, Model model) {
+        System.out.println("准备获取详细信息");
+        String admin = (String) session.getAttribute("user_role");
+
+        if (admin == null) {
+            return "redirect:/admin/login";
         }
 
-        return "redirect:/invoice/detail/" + id;
+        Invoice invoice = invoiceService.getInvoiceById(id);
+        if (invoice == null) {
+            return "redirect:/invoice/list";
+        }
+        System.out.println("发票的信息："+invoice);
+        model.addAttribute("invoice", invoice);
+        model.addAttribute("isAdmin", true);
+        return "invoice_detail";
     }
 }
