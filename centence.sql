@@ -36,15 +36,16 @@ create table orders
 (
     id          int auto_increment
         primary key,
-    userid      int           not null,
-    order_code  bigint        not null,
-    totalPrice  int           not null,
-    create_time datetime      not null,
-    address_id  int           null comment '收货地址ID',
-    receiver    varchar(50)   null comment '收件人姓名',
-    phone       varchar(20)   null comment '收件人电话',
-    address     varchar(255)  null comment '完整地址',
-    payed       int default 0 not null
+    userid      int                           not null,
+    order_code  bigint                        not null,
+    totalPrice  int                           not null,
+    create_time datetime                      not null,
+    status      varchar(50) default 'PENDING' not null comment '订单状态: PENDING(待出货), SHIPPED(已出货), DELIVERED(已送达), CANCELLED(已取消)等',
+    payed       int         default 0         not null,
+    address_id  int                           null,
+    receiver    varchar(50)                   null comment '收件人姓名',
+    phone       varchar(20)                   null comment '收件人电话',
+    address     varchar(255)                  null comment '完整地址'
 );
 
 create table wn_caritem
@@ -57,22 +58,35 @@ create table wn_caritem
     code   bigint null
 );
 
+create table wn_manager
+(
+    id              int auto_increment
+        primary key,
+    account         varchar(50)       not null,
+    password        varchar(255)      not null,
+    last_login_time timestamp         null,
+    last_login_ip   varchar(45)       null,
+    status          tinyint default 1 not null,
+    constraint account
+        unique (account)
+);
+
 create table wn_user
 (
     id              int auto_increment
         primary key,
-    account         varchar(100)                not null comment '�û��˺�',
-    password        varchar(255)                not null comment '����',
-    email           varchar(100)                null comment '��������',
-    telphone        varchar(20)                 null comment '�ֻ�����',
-    points          int            default 0    null comment '����',
-    money           decimal(10, 2) default 0.00 null comment '�˻����',
-    avatar          varchar(255)                null comment 'ͷ��·��',
-    reg_time        datetime                    null comment 'ע��ʱ��',
-    status          char           default 'Y'  null comment '״̬ Y-���� N-����',
-    last_login_time datetime                    null comment '����¼ʱ��',
-    last_login_ip   varchar(50)                 null comment '����¼IP',
-    nickname        varchar(100)                not null,
+    account         varchar(100)                not null comment '用户账号',
+    password        varchar(255)                not null comment '密码',
+    email           varchar(100)                null comment '电子邮箱',
+    telphone        varchar(20)                 null comment '手机号码',
+    points          int            default 0    null comment '积分',
+    money           decimal(10, 2) default 0.00 null comment '账户余额',
+    avatar          varchar(255)                null comment '头像路径',
+    reg_time        datetime                    null comment '注册时间',
+    status          char           default 'Y'  null comment '状态 Y-有效 N-无效',
+    last_login_time datetime                    null comment '最后登录时间',
+    last_login_ip   varchar(50)                 null comment '最后登录IP',
+    nickname        varchar(100)                not null comment '昵称',
     constraint uk_account
         unique (account)
 );
