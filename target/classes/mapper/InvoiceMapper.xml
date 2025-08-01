@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.work.work.mapper.InvoiceMapper">
+
+    <resultMap id="BaseResultMap" type="com.work.work.entity.Invoice">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="invoice_number" property="invoiceNumber" jdbcType="BIGINT"/>
+        <result column="order_code" property="orderCode" jdbcType="BIGINT"/>
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="tax_number" property="taxNumber" jdbcType="VARCHAR"/>
+        <result column="amount" property="amount" jdbcType="DECIMAL"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 管理员查询所有发票（关联用户表获取用户名） -->
+    <select id="selectAllInvoices" resultMap="BaseResultMap">
+        SELECT i.*, u.nickname AS user_name
+        FROM invoice i
+                 LEFT JOIN wn_user u ON i.user_id = u.id
+        WHERE i.status != 2
+        ORDER BY i.create_time DESC
+    </select>
+
+    <!-- 用户查询自己的发票 -->
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT i.*, u.nickname AS user_name
+        FROM invoice i
+                 LEFT JOIN wn_user u ON i.user_id = u.id
+        WHERE i.user_id = #{userId}
+          AND i.status != 2
+        ORDER BY i.create_time DESC
+    </select>
+
+    <!-- 管理员搜索所有发票 -->
+    <select id="searchAllInvoices" resultMap="BaseResultMap">
+        SELECT i.*, u.nickname AS user_name
+        FROM invoice i
+        LEFT JOIN wn_user u ON i.user_id = u.id
+        WHERE i.status != 2
+        <if test="invoiceNumber != null">
+            AND i.invoice_number = #{invoiceNumber}
+        </if>
+        <if test="orderCode != null">
+            AND i.order_code = #{orderCode}
+        </if>
+        ORDER BY i.create_time DESC
+    </select>
+
+    <!-- 用户搜索自己的发票 -->
+    <select id="searchInvoices" resultMap="BaseResultMap">
+        SELECT i.*, u.nickname AS user_name
+        FROM invoice i
+        LEFT JOIN wn_user u ON i.user_id = u.id
+        WHERE i.user_id = #{userId}
+        AND i.status != 2
+        <if test="invoiceNumber != null">
+            AND i.invoice_number = #{invoiceNumber}
+        </if>
+        <if test="orderCode != null">
+            AND i.order_code = #{orderCode}
+        </if>
+        ORDER BY i.create_time DESC
+    </select>
+
+    <!-- 根据ID获取发票 -->
+    <select id="getInvoiceById" resultMap="BaseResultMap">
+        SELECT i.*, u.nickname AS user_name
+        FROM invoice i
+                 LEFT JOIN wn_user u ON i.user_id = u.id
+        WHERE i.id = #{id}
+    </select>
+
+    <!-- 创建发票 -->
+    <insert id="insertInvoice" parameterType="com.work.work.entity.Invoice"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO invoice (
+            invoice_number, order_code, user_id,
+            title, tax_number, amount, status,
+            create_time, update_time
+        ) VALUES (
+                     #{invoiceNumber}, #{orderCode}, #{userId},
+                     #{title}, #{taxNumber}, #{amount}, #{status},
+                     #{createTime}, #{updateTime}
+                 )
+    </insert>
+
+    <!-- 更新发票信息 -->
+    <update id="updateInvoice" parameterType="com.work.work.entity.Invoice">
+        UPDATE invoice SET
+        title = #{title},
+        tax_number = #{taxNumber},
+        amount = #{amount},
+        update_time = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+        AND status = 0  <!-- 只能更新未开具的发票 -->
+    </update>
+
+    <!-- 更新发票状态 -->
+    <update id="updateInvoiceStatus">
+        UPDATE invoice SET
+                           status = #{status},
+                           update_time = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据订单号检查发票是否存在 -->
+    <select id="checkInvoiceByOrderCode" resultType="int">
+        SELECT COUNT(*)
+        FROM invoice
+        WHERE order_code = #{orderCode}
+          AND user_id = #{userId}
+          AND status != 2
+    </select>
+
+    <!-- 获取用户订单的发票列表 -->
+    <select id="getInvoiceListByUserId" resultMap="BaseResultMap">
+        SELECT i.*, u.nickname AS user_name
+        FROM invoice i
+                 LEFT JOIN wn_user u ON i.user_id = u.id
+        WHERE i.user_id = #{userId}
+          AND i.status != 2
+        ORDER BY i.create_time DESC
+    </select>
+
+    <!-- 获取订单关联的发票 -->
+    <select id="getInvoiceByOrderCode" resultMap="BaseResultMap">
+        SELECT i.*, u.nickname AS user_name
+        FROM invoice i
+                 LEFT JOIN wn_user u ON i.user_id = u.id
+        WHERE i.order_code = #{orderCode}
+          AND i.user_id = #{userId}
+          AND i.status != 2
+        LIMIT 1
+    </select>
+
+</mapper>

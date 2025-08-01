@@ -2,69 +2,54 @@
 # Application Configuration
 # =============================================
 server:
-  port: 8080
+  # Railway会自动注入PORT环境变量，Spring Boot会优先使用它
+  # 8080是本地开发时的备用端口
+  port: ${PORT:8080}
   servlet:
     context-path: /
+
 myapp:
   upload-dir:
+    # 警告：Railway的文件系统是临时的，重启后文件会丢失
+    # 建议使用云存储(如S3)或Railway的Volume来持久化存储文件
     avatars: ./uploads/avatars
-minio:
-  endpoint: http://localhost:9000
-  accessKey: minioadmin
-  secretKey: minioadmin
-  bucketName: images
 
 spring:
   data:
     redis:
-      # Redis host
-      host: localhost
-      # Redis port
-      port: 6379
-      # Redis database index
+      # 使用Railway提供的Redis环境变量
+      host: ${REDISHOST}
+      port: ${REDISPORT}
+      password: ${REDISPASSWORD} # Railway的Redis服务通常需要密码
       database: 0
-      # Connection timeout
       timeout: 10000
-      # Connection pool
       lettuce:
         pool:
           max-active: 8
-          # Max wait time when pool is exhausted
           max-wait: -1
-          # Max idle connections
           max-idle: 8
-          # Min idle connections
           min-idle: 0
 
   application:
     name: invoice
 
   datasource:
-    # Driver
     driver-class-name: com.mysql.cj.jdbc.Driver
-    # Database URL
-    url: jdbc:mysql://localhost:3306/infor?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
-    # Username
-    username: root
-    # Password
-    password: lyh666666
+    # 使用Railway提供的MySQL环境变量
+    url: jdbc:mysql://${MYSQLHOST}:${MYSQLPORT}/${MYSQLDATABASE}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: ${MYSQLUSER}
+    password: ${MYSQLPASSWORD}
 
   mvc:
-    # View resolver
+    # 注意：JSP需要特定的打包和服务器配置，在Railway上使用默认的jar包部署可能无法工作
+    # 推荐使用Thymeleaf或构建纯API后端 + 前端分离的模式
     view:
-      # View prefix
       prefix: /WEB-INF/pages/
-      # View suffix
       suffix: .jsp
-      # View order
       order: 1
 
-  # =============================================
-  # Web resources
-  # =============================================
   web:
     resources:
-      # Static resource locations
       static-locations:
         - classpath:/META-INF/resources/
         - classpath:/resources/
@@ -72,21 +57,9 @@ spring:
         - classpath:/public/
 
 # mybatis
-# MyBatis configuration
 mybatis:
-  # Mapper XML locations
   mapper-locations: classpath:mapper/*.xml
-  # Entity package
   type-aliases-package: com.work.work.entity
-  # Configuration
   configuration:
     map-underscore-to-camel-case: true
-    # ????SQL???
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
-
-
-
-
-
-

@@ -1,0 +1,87 @@
+# =============================================
+# Application Configuration
+# =============================================
+server:
+  port: 8080
+  servlet:
+    context-path: /
+myapp:
+  upload-dir:
+    avatars: ./uploads/avatars
+
+spring:
+  data:
+    redis:
+      # Redis host
+      host: localhost
+      # Redis port
+      port: 6379
+      # Redis database index
+      database: 0
+      # Connection timeout
+      timeout: 10000
+      # Connection pool
+      lettuce:
+        pool:
+          max-active: 8
+          # Max wait time when pool is exhausted
+          max-wait: -1
+          # Max idle connections
+          max-idle: 8
+          # Min idle connections
+          min-idle: 0
+
+  application:
+    name: invoice
+
+  datasource:
+    # Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # Database URL
+    url: jdbc:mysql://localhost:3306/infor?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    # Username
+    username: root
+    # Password
+    password: 123456
+
+  mvc:
+    # View resolver
+    view:
+      # View prefix
+      prefix: /WEB-INF/pages/
+      # View suffix
+      suffix: .jsp
+      # View order
+      order: 1
+
+  # =============================================
+  # Web resources
+  # =============================================
+  web:
+    resources:
+      # Static resource locations
+      static-locations:
+        - classpath:/META-INF/resources/
+        - classpath:/resources/
+        - classpath:/static/
+        - classpath:/public/
+
+# mybatis
+# MyBatis configuration
+mybatis:
+  # Mapper XML locations
+  mapper-locations: classpath:mapper/*.xml
+  # Entity package
+  type-aliases-package: com.work.work.entity
+  # Configuration
+  configuration:
+    map-underscore-to-camel-case: true
+    # ????SQL???
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+
+
+
+
+
